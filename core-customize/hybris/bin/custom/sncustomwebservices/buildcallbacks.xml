@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+ Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved.
+--><!--
+ All hybris buildcallbacks.xml macrodefinitions:
+
+ Build/Documentation
+
+	 before/after ant macro "clean"
+		 <macrodef name="sncustomwebservices_before_clean"/>
+		 <macrodef name="sncustomwebservices_after_clean"/>
+
+	 before/after ant macro "build"
+		 <macrodef name="sncustomwebservices_before_build"/>
+		 <macrodef name="sncustomwebservices_after_build"/>
+
+	 before/after ant macro "compile_core" - the core module of the extension
+		 <macrodef name="sncustomwebservices_before_compile_core">
+		 <macrodef name="sncustomwebservices_after_compile_core">
+
+	 before/after ant macro "compile_web" - the web module of the extension
+		 <macrodef name="sncustomwebservices_before_compile_web" />
+		 <macrodef name="sncustomwebservices_after_compile_web" />
+
+ Preparing extension
+
+	 will be called in the beginning of the ant call and only once (also when using multiple 
+	 ant targets e.g. ant build yunittest)
+		 <macrodef name="sncustomwebservices_only_once_prepare"/>
+
+ Creating ear module/production
+
+	 before/after ant macro "ear"
+		 <macrodef name="sncustomwebservices_before_ear"/>
+		 <macrodef name="sncustomwebservices_after_ear"/>
+
+	 before/after ant macro "production" - for hybris server only
+		 <macrodef name="sncustomwebservices_before_production" />
+		 <macrodef name="sncustomwebservices_after_production" />
+
+ JUnit Test
+
+	 before/after ant macro "yunitinit" 
+		 <macrodef name="sncustomwebservices_before_yunitinit" />
+		 <macrodef name="sncustomwebservices_after_yunitinit" />
+
+	 before/after ant macro "yunit"
+		 <macrodef name="sncustomwebservices_before_yunit" />
+		 <macrodef name="sncustomwebservices_after_yunit" /> 
+
+ Distribution package
+
+ 	 before/after ant macro "dist" - internal target; only for use when platform is available in source code
+		 <macrodef name="sncustomwebservices_after_dist"/>
+		 <macrodef name="sncustomwebservices_before_dist"/>
+
+	 before/after ant macro "dist_copy" - internal target; only for use when platform is available in source code
+		 <macrodef name="sncustomwebservices_before_dist_copy"/>
+		 <macrodef name="sncustomwebservices_after_dist_copy"/>
+
+--><project name="sncustomwebservices_buildcallbacks">
+    	
+    <!-- 
+		Called whenever 'ant ear' is used. this callback can be used to modify the content of the ear file
+
+		${ear.path}: 			path to ear
+	 -->
+    	
+    <macrodef name="sncustomwebservices_before_ear">
+        		
+        <sequential>
+            			
+            <!-- you can do anything before the EAR file is being packed -->
+            		
+        </sequential>
+        	
+    </macrodef>
+    	
+    <!-- <v2-addons> -->
+    	
+    <macrodef name="sncustomwebservices_after_clean">
+        		
+        <sequential>
+            			
+            <if>
+                				
+                <available file="${ext.sncustomwebservices.path}/web/addonsrc" type="dir"/>
+                				
+                <then>
+                    					
+                    <echo message="Deleting addons directories from: ${ext.sncustomwebservices.path}/web/webroot"/>
+                    					
+                    <echo message="Deleting addonsrc directory from: ${ext.sncustomwebservices.path}/web/"/>
+                    					
+                    <echo message="Deleting addons web libs from: ${ext.sncustomwebservices.path}/web/webroot/WEB-INF/lib"/>
+                    					
+                    <delete failonerror="false" includeEmptyDirs="true">
+                        						
+                        <fileset dir="${ext.sncustomwebservices.path}/web/webroot/" includes="**/addons/"/>
+                        						
+                        <fileset dir="${ext.sncustomwebservices.path}/web" includes="**/addonsrc/"/>
+                        						
+                        <fileset dir="${ext.sncustomwebservices.path}/web/webroot/WEB-INF/lib" includes="addon-**.jar"/>
+                        					
+                    </delete>
+                    				
+                </then>
+                			
+            </if>
+            		
+        </sequential>
+        	
+    </macrodef>
+    	
+    <!-- </v2-addons> -->
+    	
+    <macrodef name="sncustomwebservices_after_build">
+        		
+        <sequential>
+            			
+            <echo message="sncustomwebservices_after_build"/>
+            			
+            <containsExact separator=";" string="${extension.names}" substring="addonsupport">
+                				
+                <do>
+                    					
+                    <foreachext>
+                        						
+                        <do>
+                            							
+                            <for delimiter=";" list="${addon.folder}" param="addOnFile">
+                                								
+                                <sequential>
+                                    									
+                                    <if>
+                                        										
+                                        <available file="${ext.@{extname}.path}/acceleratoraddon/@{addOnFile}"/>
+                                        										
+                                        <then>
+                                            											
+                                            <echo message="Found addon:  @{extname}"/>
+                                            											
+                                            <echo message="addOnFile test:  @{addOnFile}"/>
+                                            											
+                                            <copyAddOnToExtension addonextension="@{extname}" addonresource="@{addOnFile}" target="sncustomwebservices"/>
+                                            										
+                                        </then>
+                                        									
+                                    </if>
+                                    								
+                                </sequential>
+                                							
+                            </for>
+                            						
+                        </do>
+                        					
+                    </foreachext>
+                    				
+                </do>
+                			
+            </containsExact>
+            		
+        </sequential>
+        	
+    </macrodef>
+    	
+	
+    <patternset id="extension.sncustomwebservices.production.filter">
+        		
+        <patternset refid="extension.production.filter"/>
+        		
+        <exclude name="web/addonsrc/**"/>
+        	
+    </patternset>
+    	
+
+</project>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2022 SAP SE or an SAP affiliate company. All rights reserved.
+-->
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/security 
+		http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/cache
+     	http://www.springframework.org/schema/cache/spring-cache.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <context:annotation-config/>
+    <context:component-scan
+            base-package="com.sncustomwebservices.v2, com.sncustomwebservices.auth, com.sncustomwebservices.context, com.sncustomwebservices.conv, com.sncustomwebservices.errors, com.sncustomwebservices.exceptions, com.sncustomwebservices.filter, com.sncustomwebservices.formatters, com.sncustomwebservices.oauth2, com.sncustomwebservices.resolver, com.sncustomwebservices.util.ws, com.sncustomwebservices.validator, com.sncustomwebservices.xstream, de.hybris.platform.webservicescommons.mapping, de.hybris.platform.webservicescommons.swagger"
+            scope-resolver="de.hybris.platform.spring.IgnoreTenantScopeMetadataResolver"/>
+
+    <cache:annotation-driven cache-manager="compositeWsCacheManager" key-generator="commerceCacheKeyGenerator"/>
+
+    <mvc:interceptors>
+        <ref bean="endpointRestrictionsInterceptor"/>
+        <bean class="de.hybris.platform.webservicescommons.interceptors.CacheControlHandlerInterceptor"/>
+        <ref bean="captchaValidationInterceptor"/>
+        <mvc:interceptor >
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/swagger-ui.html" />
+            <mvc:exclude-mapping path="/webjars/**" />
+            <mvc:exclude-mapping path="/api-docs" />
+            <mvc:exclude-mapping path="/swagger-resources/**" />
+            <bean class="de.hybris.platform.commercewebservicescommons.interceptor.SecurePortalAuthenticationInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <security:global-method-security order="-2147483648" secured-annotations="enabled" pre-post-annotations="enabled"
+                                     proxy-target-class="true"/>
+    <mvc:resources mapping="**/swagger-ui.html" location="classpath:/META-INF/resources/"/>
+    <mvc:resources mapping="/webjars/**" location="classpath:/META-INF/resources/webjars/"/>
+
+    <bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <bean id="cwsSearchQueryCodec"
+          class="com.sncustomwebservices.util.ws.impl.DefaultSearchQueryCodec"/>
+
+    <bean id="addressDataErrorsPopulator"
+          class="com.sncustomwebservices.populator.AddressDataErrorsPopulator">
+        <constructor-arg>
+            <map>
+                <entry key="addressline1" value="line1"/>
+                <entry key="addressline2" value="line2"/>
+            </map>
+        </constructor-arg>
+    </bean>
+
+    <!-- Pointcut definition with annotation-->
+    <aop:config proxy-target-class="true">
+        <aop:pointcut id="siteChannelRestrictionPoint"
+                      expression="@annotation(de.hybris.platform.commercewebservicescommons.annotation.SiteChannelRestriction)"/>
+        <aop:aspect ref="siteChannelRestrictionAspect">
+            <aop:around pointcut-ref="siteChannelRestrictionPoint" method="validateSiteChannel"/>
+        </aop:aspect>
+    </aop:config>
+
+    <bean id="endpointRestrictionsInterceptor"
+          parent="baseEndpointRestrictionsInterceptor">
+        <constructor-arg name="specificConfigPrefix" value="sncustomwebservices"/>
+    </bean>
+
+</beans>

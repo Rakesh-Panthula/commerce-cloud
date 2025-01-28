@@ -280,10 +280,6 @@
                     "contextPath": "/tomcatembeddedserver"
                 },
                 {
-                    "name": "yempty",
-                    "contextPath": "/yempty"
-                },
-                {
                     "name": "embeddedserver",
                     "contextPath": "/embeddedserver"
                 },
@@ -298,7 +294,11 @@
                 {
                     "name": "merchandisingcmswebservices",
                     "contextPath": "/merchandisingcmswebservices"
-                }
+                },
+				{
+				  "name": "yacceleratorstorefront",
+				  "contextPath": "/yacceleratorstorefront"
+				}
             ]
         },
         {
@@ -357,7 +357,11 @@
                 {
                     "name": "xyformsweb",
                     "contextPath": "/xyformsweb"
-                }
+                },
+				{
+				  "name": "yacceleratorstorefront",
+				  "contextPath": "/yacceleratorstorefront"
+				}
             ]
         },
         {

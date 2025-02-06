@@ -1,22 +1,18 @@
 /*
- * Copyright (c) 2024 SAP SE or an SAP affiliate company. All rights reserved.
+ * Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved.
  */
 package com.sncustomwebservices.v2.controller;
 
 import de.hybris.platform.commercefacades.customer.CustomerFacade;
-import de.hybris.platform.commercefacades.order.CartAccessCodeFacade;
 import de.hybris.platform.commercefacades.order.SaveCartFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.CartModificationData;
 import de.hybris.platform.commercefacades.order.data.CartModificationDataList;
-import de.hybris.platform.commercefacades.user.data.CustomerData;
-import de.hybris.platform.accesscode.exceptions.AccessCodeException;
 import de.hybris.platform.commerceservices.customer.DuplicateUidException;
 import de.hybris.platform.commerceservices.order.CommerceCartMergingException;
 import de.hybris.platform.commerceservices.order.CommerceCartModificationException;
 import de.hybris.platform.commerceservices.order.CommerceCartRestorationException;
 import de.hybris.platform.commerceservices.search.pagedata.PageableData;
-import de.hybris.platform.commercewebservicescommons.dto.accessCode.SapAccessCodeWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.CartListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.CartModificationListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.CartWsDTO;
@@ -25,7 +21,6 @@ import de.hybris.platform.commercewebservicescommons.errors.exceptions.CartExcep
 import de.hybris.platform.commercewebservicescommons.errors.exceptions.RequestParameterException;
 import de.hybris.platform.webservicescommons.cache.CacheControl;
 import de.hybris.platform.webservicescommons.cache.CacheControlDirective;
-import de.hybris.platform.webservicescommons.dto.error.ErrorListWsDTO;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdAndUserIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdUserIdAndCartIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiFieldsParam;
@@ -51,28 +46,21 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -89,8 +77,6 @@ public class CartsController extends BaseCommerceController
 
 	private static final String COUPON_STATUS_CODE = "couponNotValid";
 	private static final String VOUCHER_STATUS_CODE = "voucherNotValid";
-	public static final String GUEST_USER_MAPPER_CONFIG = "sapGuestUserEmail";
-	private static final String GUEST_USER_NAME = "guest";
 
 	@Resource(name = "customerFacade")
 	private CustomerFacade customerFacade;
@@ -100,10 +86,6 @@ public class CartsController extends BaseCommerceController
 	private SkipCartFieldValueSetter skipCartFieldValueSetter;
 	@Resource(name = "skipCartListFieldValueSetter")
 	private SkipCartListFieldValueSetter skipCartListFieldValueSetter;
-	@Resource(name = "guestUserDTOValidator")
-	private Validator guestUserDTOValidator;
-	@Resource(name = "cartAccessCodeFacade")
-	CartAccessCodeFacade cartAccessCodeFacade;
 	@Resource(name = "requestFromValueSetter")
 	private RequestFromValueSetter requestFromValueSetter;
 
@@ -246,7 +228,8 @@ public class CartsController extends BaseCommerceController
 	@Secured({ "ROLE_CLIENT", "ROLE_TRUSTED_CLIENT" })
 	@PutMapping(value = "/{cartId}/email")
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(operationId = "replaceCartGuestUser", summary = "Assigns an email address to the cart.", description = "Assigns an email to the cart. This endpoint is deprecated in the 2211.28 update and its deletion is planned. Please use '/setEmail' instead.")
+	@Operation(operationId = "replaceCartGuestUser", summary = "Assigns an email address to the cart.",
+			description = "Assigns an email to the cart. This endpoint is deprecated in the 2211.28 and its deletion is planned. Please use '/setEmail' instead.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void replaceCartGuestUser(
 			@Parameter(description = "Email of the guest user. It will be used during the checkout process.", required = true) @RequestParam final String email)
@@ -262,13 +245,13 @@ public class CartsController extends BaseCommerceController
 					RequestParameterException.INVALID, "login");
 		}
 
-		customerFacade.createGuestUserForAnonymousCheckout(email, GUEST_USER_NAME);
+		customerFacade.createGuestUserForAnonymousCheckout(email, "guest");
 	}
 
 	@Secured({ "ROLE_CLIENT", "ROLE_TRUSTED_CLIENT" })
 	@PutMapping(value = "/{cartId}/setEmail", consumes = APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	@Operation(operationId = "setGuestUserEmail", summary = "Assigns an email address to the cart.", description = "Assigns an email to the cart. This endpoint is added in the 2211.28 update.")
+	@Operation(operationId = "setGuestUserEmail", summary = "Assigns an email address to the cart.", description = "Assigns an email to the cart. This endpoint is introduced in the 2211.28.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void setEmail(@RequestBody SAPGuestUserRequestWsDTO guest) throws DuplicateUidException
 	{
@@ -282,58 +265,7 @@ public class CartsController extends BaseCommerceController
 					RequestParameterException.INVALID, "login");
 		}
 
-		customerFacade.createGuestUserForAnonymousCheckout(guest.getEmail(), GUEST_USER_NAME);
-	}
-
-	@Secured({ "ROLE_CLIENT", "ROLE_TRUSTED_CLIENT" })
-	@PostMapping(value = "/{cartId}/guestuser", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseStatus(HttpStatus.CREATED)
-	@ResponseBody
-	@ApiResponses(value =
-	{ @ApiResponse(responseCode = "201", description = "Created"),
-	  @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ErrorListWsDTO.class))),
-	  @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ErrorListWsDTO.class))),
-	  @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ErrorListWsDTO.class))),
-	  @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(implementation = ErrorListWsDTO.class))) })
-	@Operation(operationId = "createCartGuestUser", summary = "Creates a guest user for the cart.", description = "Creates a guest user, and assigns the user to the cart. This api is specifically designed to create a guest user for a cart that only has an anonymous user assigned."
-			+ "\n\n" + "Note: API will deny access if the cart already has a normal user or a guest user assigned")
-	@ApiBaseSiteIdUserIdAndCartIdParam
-	public SAPGuestUserRequestWsDTO createCartGuestUser(
-			@Parameter(description = "Optional attributes needed to create a guest user, such as email address, which will be used during the normal anonymous guest checkout process ") @RequestBody(required = false) final SAPGuestUserRequestWsDTO guestUser,
-			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields) throws DuplicateUidException
-	{
-		CustomerData guestCustomerData = null;
-		if (guestUser != null)
-		{
-			validate(guestUser, "guestUser", guestUserDTOValidator);
-			guestCustomerData = getDataMapper().map(guestUser, CustomerData.class, GUEST_USER_MAPPER_CONFIG);
-		}
-		guestCustomerData = customerFacade.createGuestUserForCheckout(guestCustomerData, GUEST_USER_NAME);
-		return getDataMapper().map(guestCustomerData, SAPGuestUserRequestWsDTO.class, fields);
-	}
-
-	@Secured({ "ROLE_GUEST" })
-	@PatchMapping(value = "/{cartId}/guestuser", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	@ApiResponses(value =
-	{ @ApiResponse(responseCode = "200", description = "OK"),
-	  @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ErrorListWsDTO.class))),
-	  @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ErrorListWsDTO.class))),
-	  @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ErrorListWsDTO.class))),
-	  @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(implementation = ErrorListWsDTO.class))) })
-	@Operation(operationId = "updateCurrentUserProfile", summary = "Updates profile for current cart guest user.", description = "Updates profile for current cart guest user. This API is specifically designed to update profile for guest user,"
-			+ " so it can only be accessed after a guest user has been created for the cart. Only attributes provided in the request body will be changed." + "\n\n"
-			+ "Note: API will deny access if the cart already has a normal user or no user assigned")
-	@ApiBaseSiteIdUserIdAndCartIdParam
-	public SAPGuestUserRequestWsDTO updateCurrentUserProfile(
-			@Parameter(description = "Attributes needed to update for guest user, such as email address ", required = true) @RequestBody final SAPGuestUserRequestWsDTO guestUser,
-			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
-	{
-        	validate(guestUser, "guestUser", guestUserDTOValidator);
-		final CustomerData guestCustomerData = getCartFacade().getCurrentCartCustomer();
-		LOG.debug("updateGuestUser: userId={}", guestCustomerData.getUid());
-		getDataMapper().map(guestUser, guestCustomerData, GUEST_USER_MAPPER_CONFIG, false);
-		return getDataMapper().map(customerFacade.updateGuestUserProfile(guestCustomerData), SAPGuestUserRequestWsDTO.class, fields);
+		customerFacade.createGuestUserForAnonymousCheckout(guest.getEmail(), "guest");
 	}
 
 	@PostMapping(path = "/{cartId}/validate")
@@ -354,25 +286,6 @@ public class CartsController extends BaseCommerceController
 
 		cartModificationDataList.setCartModificationList(replaceVouchersValidationResults(cartValidationResults, invalidVouchers));
 		return getDataMapper().map(cartModificationDataList, CartModificationListWsDTO.class, fields);
-	}
-
-	/**
-	 * Generate access code for cartId in the url
-	 * User id is user identifier or 'current' for currently authenticated user, 'anonymous' for anonymous user when user id
-	 * is anonymous, cart id is cart.guid
-	 *
-	 * @return access code for cartId
-	 * @throws AccessCodeException sign cart id failed exception
-	 */
-	@PostMapping(value = "/{cartId}/accessCode", produces = MediaType.APPLICATION_JSON_VALUE)
-	@Operation(operationId = "getCartIdAccessCode", summary = "Generates an access code for the cart.", description = "Generates an access code for the specified cart. An access code is composed by a payload part and a signature part.")
-	@ResponseBody
-	@ApiBaseSiteIdUserIdAndCartIdParam
-	public SapAccessCodeWsDTO getCartIdAccessCode() throws AccessCodeException
-	{
-		final SapAccessCodeWsDTO accessCodeWsDTO = new SapAccessCodeWsDTO();
-		accessCodeWsDTO.setAccessCode(this.cartAccessCodeFacade.generateCartIdAccessCode());
-		return accessCodeWsDTO;
 	}
 
 	protected boolean isUserCart(final String toMergeCartGuid)

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- Copyright (c) 2024 SAP SE or an SAP affiliate company. All rights reserved.
+ Copyright (c) 2022 SAP SE or an SAP affiliate company. All rights reserved.
 -->
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://www.springframework.org/schema/beans"
@@ -199,18 +199,6 @@
                 <entry key="BASIC" value="addresses"/>
                 <entry key="DEFAULT" value="addresses(DEFAULT)"/>
                 <entry key="FULL" value="addresses(FULL)"/>
-            </map>
-        </property>
-    </bean>
-
-    <bean parent="fieldSetLevelMapping" id="guestUserWsDTOFieldSetLevelMapping">
-        <property name="dtoClass"
-                  value="de.hybris.platform.commercewebservicescommons.dto.order.SAPGuestUserRequestWsDTO"/>
-        <property name="levelMapping">
-            <map>
-                <entry key="BASIC" value="email"/>
-                <entry key="DEFAULT" value="email"/>
-                <entry key="FULL" value="email"/>
             </map>
         </property>
     </bean>
@@ -419,9 +407,9 @@
                   value="de.hybris.platform.commercewebservicescommons.dto.store.TimeWsDTO"/>
         <property name="levelMapping">
             <map>
-                <entry key="BASIC" value="minute,hour,formattedHour,meridiemIndicator"/>
-                <entry key="DEFAULT" value="minute,hour,formattedHour,meridiemIndicator"/>
-                <entry key="FULL" value="minute,hour,formattedHour,meridiemIndicator"/>
+                <entry key="BASIC" value="minute,hour,formattedHour"/>
+                <entry key="DEFAULT" value="minute,hour,formattedHour"/>
+                <entry key="FULL" value="minute,hour,formattedHour"/>
             </map>
         </property>
     </bean>
@@ -527,11 +515,11 @@
         <property name="levelMapping">
             <map>
                 <entry key="BASIC"
-                       value="purchasable,stock,name,baseProduct,availableForPickup,code,url,price,sapUnit"/>
+                       value="purchasable,stock,name,baseProduct,availableForPickup,code,url,price"/>
                 <entry key="DEFAULT"
-                       value="summary,averageRating,purchasable,stock(DEFAULT),description,variantMatrix(DEFAULT),name,baseOptions(DEFAULT),baseProduct,availableForPickup,variantOptions(DEFAULT),code,url,price(DEFAULT),numberOfReviews,manufacturer,categories(BASIC,name),priceRange,multidimensional,configuratorType,configurable,tags,sapAddToCartDisabled,sapAddToCartDisabledMessage,sapUnit"/>
+                       value="summary,averageRating,purchasable,stock(DEFAULT),description,variantMatrix(DEFAULT),name,baseOptions(DEFAULT),baseProduct,availableForPickup,variantOptions(DEFAULT),code,url,price(DEFAULT),numberOfReviews,manufacturer,categories(BASIC,name),priceRange,multidimensional,configuratorType,configurable,tags,sapAddToCartDisabled,sapAddToCartDisabledMessage"/>
                 <entry key="FULL"
-                       value="summary,productReferences(FULL),classifications(FULL),averageRating,purchasable,volumePrices(FULL),variantType,stock(FULL),description,variantMatrix(FULL),name,baseOptions(FULL),baseProduct,availableForPickup,variantOptions(FULL),reviews(FULL),code,url,price(FULL),numberOfReviews,manufacturer,volumePricesFlag,futureStocks(FULL),images(FULL),categories(FULL),potentialPromotions(FULL),priceRange,multidimensional,configuratorType,configurable,tags,sapAddToCartDisabled,sapAddToCartDisabledMessage,sapUnit"/>
+                       value="summary,productReferences(FULL),classifications(FULL),averageRating,purchasable,volumePrices(FULL),variantType,stock(FULL),description,variantMatrix(FULL),name,baseOptions(FULL),baseProduct,availableForPickup,variantOptions(FULL),reviews(FULL),code,url,price(FULL),numberOfReviews,manufacturer,volumePricesFlag,futureStocks(FULL),images(FULL),categories(FULL),potentialPromotions(FULL),priceRange,multidimensional,configuratorType,configurable,tags,sapAddToCartDisabled,sapAddToCartDisabledMessage"/>
             </map>
         </property>
     </bean>
@@ -1195,11 +1183,11 @@
                   value="de.hybris.platform.commercewebservicescommons.dto.order.CartWsDTO"/>
         <property name="levelMapping">
             <map>
-                <entry key="BASIC" value="code,guid,sapBillingAddress(BASIC)"/>
+                <entry key="BASIC" value="code,guid"/>
                 <entry key="DEFAULT"
-                       value="BASIC,totalItems,totalPrice,totalPriceWithTax,entries(DEFAULT),earliestRetrievalAt,requestedRetrievalAt,sapBillingAddress(DEFAULT)"/>
+                       value="BASIC,totalItems,totalPrice,totalPriceWithTax,entries(DEFAULT),earliestRetrievalAt,requestedRetrievalAt"/>
                 <entry key="FULL"
-                       value="potentialProductPromotions(FULL),potentialOrderPromotions(FULL),totalUnitCount,store,appliedOrderPromotions(FULL),pickupItemsQuantity,net,calculated,appliedVouchers(FULL),productDiscounts(FULL),totalDiscounts(FULL),subTotal(FULL),orderDiscounts(FULL),entries(FULL),appliedProductPromotions(FULL),totalPrice(FULL),site,deliveryMode(FULL),code,deliveryOrderGroups(FULL),guid,paymentInfo(FULL),pickupOrderGroups(FULL),totalItems,totalPriceWithTax(FULL),deliveryItemsQuantity,totalTax(FULL),user(FULL),deliveryAddress(FULL),deliveryCost(FULL),name,description,savedBy,saveTime,expirationTime,earliestRetrievalAt,requestedRetrievalAt,sapBillingAddress(DEFAULT)"/>
+                       value="potentialProductPromotions(FULL),potentialOrderPromotions(FULL),totalUnitCount,store,appliedOrderPromotions(FULL),pickupItemsQuantity,net,calculated,appliedVouchers(FULL),productDiscounts(FULL),totalDiscounts(FULL),subTotal(FULL),orderDiscounts(FULL),entries(FULL),appliedProductPromotions(FULL),totalPrice(FULL),site,deliveryMode(FULL),code,deliveryOrderGroups(FULL),guid,paymentInfo(FULL),pickupOrderGroups(FULL),totalItems,totalPriceWithTax(FULL),deliveryItemsQuantity,totalTax(FULL),user(FULL),deliveryAddress(FULL),deliveryCost(FULL),name,description,savedBy,saveTime,expirationTime,earliestRetrievalAt,requestedRetrievalAt"/>
             </map>
         </property>
     </bean>
@@ -1373,11 +1361,11 @@
                   value="de.hybris.platform.commercewebservicescommons.dto.order.OrderWsDTO"/>
         <property name="levelMapping">
             <map>
-                <entry key="BASIC" value="code,guid,sapBillingAddress(BASIC)"/>
+                <entry key="BASIC" value="code,guid"/>
                 <entry key="DEFAULT"
-                       value="unconsignedEntries(DEFAULT),status,created,deliveryStatusDisplay,statusDisplay,consignments(DEFAULT),guestCustomer,deliveryStatus,store,appliedOrderPromotions(DEFAULT),pickupItemsQuantity,net,calculated,appliedVouchers(DEFAULT),productDiscounts(DEFAULT),totalDiscounts(DEFAULT),subTotal(DEFAULT),orderDiscounts(DEFAULT),entries(DEFAULT),appliedProductPromotions(DEFAULT),totalPrice(DEFAULT),site,deliveryMode(DEFAULT),code,deliveryOrderGroups(DEFAULT),guid,paymentInfo(DEFAULT),pickupOrderGroups(DEFAULT),totalItems,totalPriceWithTax(DEFAULT),deliveryItemsQuantity,totalTax(DEFAULT),user(DEFAULT),deliveryAddress(DEFAULT),deliveryCost(DEFAULT),cancellable,returnable,requestedRetrievalAt,sapBillingAddress(DEFAULT)"/>
+                       value="unconsignedEntries(DEFAULT),status,created,deliveryStatusDisplay,statusDisplay,consignments(DEFAULT),guestCustomer,deliveryStatus,store,appliedOrderPromotions(DEFAULT),pickupItemsQuantity,net,calculated,appliedVouchers(DEFAULT),productDiscounts(DEFAULT),totalDiscounts(DEFAULT),subTotal(DEFAULT),orderDiscounts(DEFAULT),entries(DEFAULT),appliedProductPromotions(DEFAULT),totalPrice(DEFAULT),site,deliveryMode(DEFAULT),code,deliveryOrderGroups(DEFAULT),guid,paymentInfo(DEFAULT),pickupOrderGroups(DEFAULT),totalItems,totalPriceWithTax(DEFAULT),deliveryItemsQuantity,totalTax(DEFAULT),user(DEFAULT),deliveryAddress(DEFAULT),deliveryCost(DEFAULT),cancellable,returnable,requestedRetrievalAt"/>
                 <entry key="FULL"
-                       value="unconsignedEntries(FULL),status,created,deliveryStatusDisplay,statusDisplay,consignments(FULL),guestCustomer,deliveryStatus,store,appliedOrderPromotions(FULL),pickupItemsQuantity,net,calculated,appliedVouchers(FULL),productDiscounts(FULL),totalDiscounts(FULL),subTotal(FULL),orderDiscounts(FULL),entries(FULL),appliedProductPromotions(FULL),totalPrice(FULL),site,deliveryMode(FULL),code,deliveryOrderGroups(FULL),guid,paymentInfo(FULL),pickupOrderGroups(FULL),totalItems,totalPriceWithTax(FULL),deliveryItemsQuantity,totalTax(FULL),user(FULL),deliveryAddress(FULL),deliveryCost(FULL),cancellable,returnable,requestedRetrievalAt,sapBillingAddress(DEFAULT)"/>
+                       value="unconsignedEntries(FULL),status,created,deliveryStatusDisplay,statusDisplay,consignments(FULL),guestCustomer,deliveryStatus,store,appliedOrderPromotions(FULL),pickupItemsQuantity,net,calculated,appliedVouchers(FULL),productDiscounts(FULL),totalDiscounts(FULL),subTotal(FULL),orderDiscounts(FULL),entries(FULL),appliedProductPromotions(FULL),totalPrice(FULL),site,deliveryMode(FULL),code,deliveryOrderGroups(FULL),guid,paymentInfo(FULL),pickupOrderGroups(FULL),totalItems,totalPriceWithTax(FULL),deliveryItemsQuantity,totalTax(FULL),user(FULL),deliveryAddress(FULL),deliveryCost(FULL),cancellable,returnable,requestedRetrievalAt"/>
             </map>
         </property>
     </bean>
@@ -1467,9 +1455,9 @@
             <map>
                 <entry key="BASIC" value="id"/>
                 <entry key="DEFAULT"
-                       value="expiryYear,id,issueNumber,startYear,expiryMonth,saved,cardType(DEFAULT),billingAddress(DEFAULT),startMonth,subscriptionId,defaultPayment,cardNumber,accountHolderName,sapPaymentMethod(DEFAULT)"/>
+                       value="expiryYear,id,issueNumber,startYear,expiryMonth,saved,cardType(DEFAULT),billingAddress(DEFAULT),startMonth,subscriptionId,defaultPayment,cardNumber,accountHolderName"/>
                 <entry key="FULL"
-                       value="expiryYear,id,issueNumber,startYear,expiryMonth,saved,cardType(FULL),billingAddress(FULL),startMonth,subscriptionId,defaultPayment,cardNumber,accountHolderName,sapPaymentMethod(FULL)"/>
+                       value="expiryYear,id,issueNumber,startYear,expiryMonth,saved,cardType(FULL),billingAddress(FULL),startMonth,subscriptionId,defaultPayment,cardNumber,accountHolderName"/>
             </map>
         </property>
     </bean>
@@ -1627,46 +1615,35 @@
             </map>
         </property>
     </bean>
-
+    
     <bean parent="fieldSetLevelMapping" id="SAPInvoicesWsDTOFieldSetLevelMapping">
         <property name="dtoClass"
-                  value="de.hybris.platform.commercewebservicescommons.dto.order.SAPInvoicesWsDTO"/>
+                  value="de.hybris.platform.commercewebservicescommons.dto.order.SAPInvoicesWsDTO" />
         <property name="levelMapping">
             <map>
                 <entry key="BASIC"
-                       value="invoices,sorts,pagination"/>
+                       value="invoices,sorts,pagination" />
                 <entry key="DEFAULT"
-                       value="invoices(DEFAULT),sorts(DEFAULT),pagination(DEFAULT)"/>
+                       value="invoices(DEFAULT),sorts(DEFAULT),pagination(DEFAULT)" />
                 <entry key="FULL"
-                       value="invoices(FULL),sorts(FULL),pagination(FULL)"/>
+                       value="invoices(FULL),sorts(FULL),pagination(FULL)" />
             </map>
         </property>
     </bean>
-
+    
     <bean parent="fieldSetLevelMapping" id="SAPInvoiceWsDTOFieldSetLevelMapping">
         <property name="dtoClass"
-                  value="de.hybris.platform.commercewebservicescommons.dto.order.SAPInvoiceWsDTO"/>
+                  value="de.hybris.platform.commercewebservicescommons.dto.order.SAPInvoiceWsDTO" />
         <property name="levelMapping">
             <map>
                 <entry key="BASIC"
-                       value="invoiceId,createdAt,totalAmount,netAmount,externalSystemId"/>
+                       value="invoiceId,createdAt,totalAmount,netAmount,externalSystemId" />
                 <entry key="DEFAULT"
-                       value="invoiceId,createdAt,totalAmount(DEFAULT),netAmount(DEFAULT),externalSystemId"/>
+                       value="invoiceId,createdAt,totalAmount(DEFAULT),netAmount(DEFAULT),externalSystemId" />
                 <entry key="FULL"
-                       value="invoiceId,createdAt,totalAmount(FULL),netAmount(FULL),externalSystemId"/>
+                       value="invoiceId,createdAt,totalAmount(FULL),netAmount(FULL),externalSystemId" />
             </map>
         </property>
     </bean>
 
-    <bean parent="fieldSetLevelMapping">
-        <property name="dtoClass"
-                  value="de.hybris.platform.commercewebservicescommons.dto.order.PaymentMethodWsDTO"/>
-        <property name="levelMapping">
-            <map>
-                <entry key="BASIC" value="code,name"/>
-                <entry key="DEFAULT" value="BASIC"/>
-                <entry key="FULL" value="DEFAULT"/>
-            </map>
-        </property>
-    </bean>
 </beans>

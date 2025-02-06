@@ -13,7 +13,6 @@ import de.hybris.platform.commercewebservicescommons.dto.order.CancellationReque
 import de.hybris.platform.commercewebservicescommons.dto.order.CancellationRequestEntryInputWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.OrderHistoryListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.OrderWsDTO;
-import de.hybris.platform.commercewebservicescommons.errors.exceptions.CartException;
 import de.hybris.platform.commercewebservicescommons.errors.exceptions.PaymentAuthorizationException;
 import de.hybris.platform.commercewebservicescommons.strategies.CartLoaderStrategy;
 import de.hybris.platform.order.InvalidCartException;
@@ -228,30 +227,6 @@ public class OrdersController extends BaseCommerceController
 		//placeorder
 		final OrderData orderData = getCheckoutFacade().placeOrder();
 		return getDataMapper().map(orderData, OrderWsDTO.class, fields);
-	}
-
-
-	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_CLIENT", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT" })
-	@CacheControl(directive = CacheControlDirective.NO_CACHE)
-	@PostMapping(value = "/users/{userId}/orders/paymentAuthorizedOrderPlacement", produces = MediaType.APPLICATION_JSON)
-	@ResponseStatus(HttpStatus.CREATED)
-	@ResponseBody
-	@SiteChannelRestriction(allowedSiteChannelsProperty = "api.compatibility.b2c.channels")
-	@Operation(operationId = "paymentAuthorizedOrderPlacement", summary = "Place an order with authorized payment.", description = "This API supports placing order with asynchronous payment patterns like iFrame, hosted payment page and hosted field. With these payment patterns, the payment authorization is done independently with order placement API and the payment result is handled through asynchronous notifications. For instant payment method and delayed payment method, the order is placed directly after customers have successfully submitted the payments but the order process shall be in paused state until the payment notification is received and processed on Commerce side."
-			+ "\n\n" + "Note: API can only be used when the baseStore's payment provider is configured as OPF, and completion of OPF-related order processes is required; otherwise, it will throw an exception.")
-	@ApiBaseSiteIdAndUserIdParam
-	public OrderWsDTO placeOrderWithAuthorizedPayment(
-			@Parameter(description = "Cart code for logged in user, cart GUID for guest checkout", required = true) @RequestParam final String cartId,
-			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
-			throws InvalidCartException, NoCheckoutCartException {
-		skipOrderFieldValueSetter.setValue(fields);
-		cartLoaderStrategy.loadCart(cartId);
-		validateCartForPlaceOrder();
-		if (getSessionCart().getSapGenericPaymentInfo() != null){
-			final OrderData orderData = getCheckoutFacade().placeOrder();
-			return getDataMapper().map(orderData, OrderWsDTO.class, fields);
-		}
-		throw new CartException("Cart without SapGenericPaymentInfo is not allowed to place an order!");
 	}
 
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })

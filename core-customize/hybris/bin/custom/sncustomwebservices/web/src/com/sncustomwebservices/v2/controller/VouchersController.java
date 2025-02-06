@@ -36,13 +36,13 @@ public class VouchersController extends BaseController
 	private VoucherFacade voucherFacade;
 
 	/**
-	 * @deprecated (since "2211.28", forRemoval = true)
+	 * @deprecated (since "2211.26", forRemoval = true)
 	 */
-	@Deprecated(since = "2211.28", forRemoval = true)
+	@Deprecated(since = "2211.26", forRemoval = true)
 	@Secured("ROLE_TRUSTED_CLIENT")
 	@RequestMapping(value = "/{code}", method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getVoucher", summary = "Retrieves the voucher.", description = "Retrieves the details of the voucher using the voucher identifier. This endpoint is deprecated in the 2211.28 update and its deletion is planned. Please use the POST {baseSiteId}/vouchers/code/search instead.")
+	@Operation(operationId = "getVoucher", summary = "Retrieves the voucher.", description = "Retrieves the details of the voucher using the voucher identifier. It's deprecated. Use POST {baseSiteId}/vouchers/code/search instead.")
 	@ApiBaseSiteIdParam
 	public VoucherWsDTO getVoucher(
 			@Parameter(description = "Voucher identifier (code)", required = true, example = "VCHR-H8BC-Y3D5-34AL") @PathVariable final String code,
@@ -55,7 +55,7 @@ public class VouchersController extends BaseController
 	@Secured("ROLE_TRUSTED_CLIENT")
 	@PostMapping("/code/search")
 	@ResponseBody
-	@Operation(operationId = "getVoucherByCode", summary = "Retrieves the voucher by voucher code.", description = "Retrieves the details of the voucher by voucher code. This endpoint is added in the 2211.28 update.")
+	@Operation(operationId = "getVoucherByCode", summary = "Retrieves the voucher by voucher code.", description = "Retrieves the details of the voucher by voucher code.")
 	@ApiBaseSiteIdParam
 	public VoucherWsDTO getVoucherByCode(@RequestBody final SAPVoucherOperationRequestWsDTO voucherOperationRequestWsDTO,
 			@ApiFieldsParam(defaultValue = BASIC_FIELD_SET) @RequestParam(defaultValue = BASIC_FIELD_SET) final String fields)

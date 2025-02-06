@@ -59,7 +59,7 @@ public class SaveCartController extends BaseCommerceController
 	@ResponseBody
 	@Operation(operationId = "doSaveCart", summary = "Updates a cart to save it.", description =
 			"Updates a cart to explicitly save it. Adds the name and description of the saved cart if specified."
-					+ " This endpoint is deprecated in the 2211.28 update and its deletion is planned. Please use '/savedCart' instead.")
+					+ " This endpoint is deprecated in the 2211.28 and its deletion is planned. Please use '/savedCart' instead.")
 	@ApiBaseSiteIdAndUserIdParam
 	public SaveCartResultWsDTO doSaveCart(
 			@Parameter(description = "Cart identifier: cart code for logged-in user, cart GUID for anonymous user, or 'current' for the last modified cart.", required = true) @PathVariable final String cartId,
@@ -80,7 +80,7 @@ public class SaveCartController extends BaseCommerceController
 
 	@PatchMapping(value = "/{cartId}/savedCart", consumes = APPLICATION_JSON_VALUE)
 	@ResponseBody
-	@Operation(operationId = "doCartSave", summary = "Updates a cart to save it.", description = "Updates a cart to explicitly save it. Adds the name and description of the saved cart if specified. This endpoint is added in the 2211.28 update.")
+	@Operation(operationId = "doCartSave", summary = "Updates a cart to save it.", description = "Updates a cart to explicitly save it. Adds the name and description of the saved cart if specified. This endpoint is introduced in the 2211.28.")
 	@ApiBaseSiteIdAndUserIdParam
 	public SaveCartResultWsDTO doCartSave(
 			@Parameter(description = "Cart identifier: cart code for logged-in user, cart GUID for anonymous user, or 'current' for the last modified cart.", required = true) @PathVariable final String cartId,
@@ -160,7 +160,7 @@ public class SaveCartController extends BaseCommerceController
 	@ResponseBody
 	@Operation(operationId = "doCartClone", summary = "Creates a clone of a saved cart.", description =
 			"Creates a clone of a saved cart. Customers can provide a name and a description for the cloned cart even though they aren't mandatory parameters."
-					+ " This endpoint is deprecated in the 2211.28 update and its deletion is planned. Please use '/copySavedCart' instead.")
+					+ " This endpoint is deprecated in the 2211.28 and its deletion is planned. Please use '/copySavedCart' instead.")
 	@ApiBaseSiteIdAndUserIdParam
 	public SaveCartResultWsDTO doCartClone(
 			@Parameter(description = "Cart identifier: cart code for logged-in user, cart GUID for anonymous user, or 'current' for the last modified cart.", required = true) @PathVariable final String cartId,
@@ -181,7 +181,7 @@ public class SaveCartController extends BaseCommerceController
 
 	@PostMapping(value = "/{cartId}/copySavedCart", consumes = APPLICATION_JSON_VALUE)
 	@ResponseBody
-	@Operation(operationId = "copySavedCart", summary = "Creates a clone of a saved cart.", description = "Creates a clone of a saved cart. Customers can provide a name and a description for the cloned cart even though they aren't mandatory parameters. This endpoint is added in the 2211.28 update.")
+	@Operation(operationId = "copySavedCart", summary = "Creates a clone of a saved cart.", description = "Creates a clone of a saved cart. Customers can provide a name and a description for the cloned cart even though they aren't mandatory parameters. This endpoint is introduced in the 2211.28.")
 	@ApiBaseSiteIdAndUserIdParam
 	public SaveCartResultWsDTO copySavedCart(
 			@Parameter(description = "Cart identifier: cart code for logged-in user, cart GUID for anonymous user, or 'current' for the last modified cart.", required = true) @PathVariable final String cartId,

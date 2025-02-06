@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- Copyright (c) 2024 SAP SE or an SAP affiliate company. All rights reserved.
+ Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved.
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -34,8 +34,6 @@
 	      parent="abstractCustomMapper"/>
 	<bean id="sapInvoiceSortMapper" class="com.sncustomwebservices.mapping.mappers.SapInvoiceSortMapper"
 	      parent="abstractCustomMapper"/>
-	<bean class="com.sncustomwebservices.mapping.mappers.ProductUnitAvailabilityDataMapper"
-		  parent="abstractCustomMapper"/>
 
 	<!-- Orika : Converters -->
 	<bean class="com.sncustomwebservices.mapping.converters.StockLevelStatusConverter"/>
@@ -76,19 +74,7 @@
 		</property>
 	</bean>
 
-    <bean id="guestUserFieldMapper" parent="fieldMapper">
-        <property name="sourceClass"
-                  value="de.hybris.platform.commercewebservicescommons.dto.order.SAPGuestUserRequestWsDTO"/>
-        <property name="destClass"
-                  value="de.hybris.platform.commercefacades.user.data.CustomerData"/>
-        <property name="fieldMapping">
-            <map>
-                <entry key="email" value="sapGuestUserEmail"/>
-            </map>
-        </property>
-    </bean>
-
-        <!-- Field Mappings : Catalog -->
+	<!-- Field Mappings : Catalog -->
 
 	<bean id="catalogVersionFieldMapper" parent="fieldMapper">
 		<property name="sourceClass"
@@ -112,11 +98,6 @@
 		<property name="fieldMapping">
 			<map>
 				<entry key="rootGroups" value="entryGroups"/>
-				<entry key="sapBillingAddress" value="sapBillingAddress"/>
-				<!-- paymentInfo and sapGenericPaymentInfo are mutually exclusive
-                     and do not have a value at the same time -->
-				<entry key="paymentInfo" value="paymentInfo"/>
-				<entry key="sapGenericPaymentInfo" value="paymentInfo"/>
 			</map>
 		</property>
 	</bean>
@@ -356,24 +337,7 @@
 		<property name="fieldMapping">
 			<map>
 				<entry key="rootGroups" value="entryGroups"/>
-				<entry key="sapBillingAddress" value="sapBillingAddress"/>
-				<!-- paymentInfo and sapGenericPaymentInfo are mutually exclusive
-				     and do not have a value at the same time -->
-				<entry key="paymentInfo" value="paymentInfo"/>
-				<entry key="sapGenericPaymentInfo" value="paymentInfo"/>
 			</map>
 		</property>
 	</bean>
-
-	<!-- Field Mappings : paymentDetails -->
-	<bean id="GenericPaymentInfoFieldMapper" parent="fieldMapper">
-		<property name="sourceClass" value="de.hybris.platform.commercefacades.payment.data.GenericPaymentInfoData"/>
-		<property name="destClass" value="de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO"/>
-		<property name="fieldMapping">
-			<map>
-				<entry key="paymentMethod" value="sapPaymentMethod"/>
-			</map>
-		</property>
-	</bean>
-
 </beans>

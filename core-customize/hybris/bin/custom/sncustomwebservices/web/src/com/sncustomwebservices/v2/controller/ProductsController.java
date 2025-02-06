@@ -15,7 +15,6 @@ import de.hybris.platform.commercefacades.product.data.ProductReferenceData;
 import de.hybris.platform.commercefacades.product.data.ProductReferencesData;
 import de.hybris.platform.commercefacades.product.data.PromotionData;
 import de.hybris.platform.commercefacades.product.data.ReviewData;
-import de.hybris.platform.commercefacades.product.data.SAPUnitData;
 import de.hybris.platform.commercefacades.product.data.StockData;
 import de.hybris.platform.commercefacades.product.data.SuggestionData;
 import de.hybris.platform.commercefacades.search.ProductSearchFacade;
@@ -217,7 +216,6 @@ public class ProductsController extends BaseController
 		tempProductData.setPurchasable(Boolean.FALSE);
 		tempProductData.setPriceRange(new PriceRangeData());
 		tempProductData.setStock(new StockData());
-		tempProductData.setSapUnit(new SAPUnitData());
 
 		final ProductWsDTO productWsDTO = getDataMapper().map(tempProductData, ProductWsDTO.class, fields);
 		final boolean skipImages = CollectionUtils.isEmpty(productWsDTO.getImages());
@@ -237,7 +235,7 @@ public class ProductsController extends BaseController
 		{
 			options.remove(ProductOption.PROMOTIONS);
 		}
-		final boolean skipPrice = productWsDTO.getPrice() == null && productWsDTO.getPurchasable() == null && productWsDTO.getSapUnit() == null;
+		final boolean skipPrice = productWsDTO.getPrice() == null && productWsDTO.getPurchasable() == null;
 		if (skipPrice)
 		{
 			options.remove(ProductOption.PRICE);

@@ -177,7 +177,7 @@ public class CartPromotionsController extends BaseCommerceController
 	@Secured({ "ROLE_CLIENT", "ROLE_CUSTOMERGROUP", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_GUEST" })
 	@PostMapping(value = "/{cartId}/vouchers")
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(operationId = "doApplyCartVoucher", summary = "Assigns a voucher to the cart.", description = "Assigns a voucher to the cart using the voucher identifier. This endpoint is deprecated in the 2211.28 update and its deletion is planned. Please use '/applyVoucher' instead.")
+	@Operation(operationId = "doApplyCartVoucher", summary = "Assigns a voucher to the cart.", description = "Assigns a voucher to the cart using the voucher identifier. This endpoint is deprecated in the 2211.28 and its deletion is planned. Please use '/applyVoucher' instead.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void doApplyCartVoucher(@Parameter(description = "Voucher identifier (code)", required = true, example = "VCHR-H8BC-Y3D5-34AL") @RequestParam final String voucherId,
 			final HttpServletRequest request) throws NoCheckoutCartException, VoucherOperationException
@@ -192,7 +192,7 @@ public class CartPromotionsController extends BaseCommerceController
 	@Secured({ "ROLE_CLIENT", "ROLE_CUSTOMERGROUP", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_GUEST" })
 	@DeleteMapping(value = "/{cartId}/vouchers/{voucherId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	@Operation(operationId = "removeCartVoucher", summary = "Deletes a voucher defined for the current cart.", description = "Deletes a voucher associated with the current cart. This endpoint is deprecated in the 2211.28 update and its deletion is planned. Please use '/removeVoucher' instead.")
+	@Operation(operationId = "removeCartVoucher", summary = "Deletes a voucher defined for the current cart.", description = "Deletes a voucher associated with the current cart. This endpoint is deprecated in the 2211.28 and its deletion is planned. Please use '/removeVoucher' instead.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void removeCartVoucher(@Parameter(description = "Voucher identifier (code)", required = true,example = "VCHR-H8BC-Y3D5-34AL") @PathVariable final String voucherId)
 			throws NoCheckoutCartException, VoucherOperationException
@@ -211,7 +211,7 @@ public class CartPromotionsController extends BaseCommerceController
 	@Secured({ "ROLE_CLIENT", "ROLE_CUSTOMERGROUP", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_GUEST" })
 	@PostMapping(value = "/{cartId}/applyVoucher", consumes = APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	@Operation(operationId = "applyCartVoucher", summary = "Assigns a voucher to the cart.", description = "Assigns a voucher to the cart using the voucher identifier. This endpoint is added in the 2211.28 update.")
+	@Operation(operationId = "applyCartVoucher", summary = "Assigns a voucher to the cart.", description = "Assigns a voucher to the cart using the voucher identifier. This endpoint is introduced in the 2211.28.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void applyCartVoucher(@RequestBody SAPVoucherRequestWsDTO voucher, final HttpServletRequest request)
 			throws NoCheckoutCartException, VoucherOperationException
@@ -222,7 +222,7 @@ public class CartPromotionsController extends BaseCommerceController
 	@Secured({ "ROLE_CLIENT", "ROLE_CUSTOMERGROUP", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_GUEST" })
 	@PostMapping(value = "/{cartId}/removeVoucher", consumes = APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	@Operation(operationId = "doCartVoucherRemoval", summary = "Removes a voucher defined for the current cart. This endpoint is added in the 2211.28 update.", description = "Removes a voucher associated with the current cart.")
+	@Operation(operationId = "doCartVoucherRemoval", summary = "Removes a voucher defined for the current cart. This endpoint is introduced in the 2211.28.", description = "Removes a voucher associated with the current cart.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void doCartVoucherRemoval(@RequestBody SAPVoucherRequestWsDTO voucher)
 			throws NoCheckoutCartException, VoucherOperationException

@@ -4,7 +4,7 @@
  For more details about configurations options that may appear in this file, see https://lucene.apache.org/solr/guide/8_8/configuring-solrconfig-xml.html.
 -->
 <config>
-	<luceneMatchVersion>9.11</luceneMatchVersion>
+	<luceneMatchVersion>9.9</luceneMatchVersion>
 
 	<lib dir="${solr.install.dir:../../../..}/modules/analysis-extras/lib" regex=".*\.jar" />
 	<lib dir="${solr.install.dir:../../../..}/modules/hybris/lib" regex=".*\.jar" />

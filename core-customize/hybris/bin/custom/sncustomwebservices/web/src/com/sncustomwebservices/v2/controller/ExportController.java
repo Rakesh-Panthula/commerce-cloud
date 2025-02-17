@@ -53,14 +53,14 @@ public class ExportController extends BaseController
 	@Secured("ROLE_TRUSTED_CLIENT")
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getExportedProducts", summary = "Retrieves a list of exported products.", description = "Retrieves all of the products or only the products that were modified after the time in the timestamp parameter.")
+	@Operation(operationId = "getExportedProducts", summary = "Get a list of product exports.", description = "Used for product export. Depending on the timestamp parameter, it can return all products or only products modified after the given time.")
 	@ApiBaseSiteIdParam
 	public ProductListWsDTO getExportedProducts(
-			@Parameter(description = "Current result page. Default value is 0.") @RequestParam(defaultValue = DEFAULT_PAGE_VALUE) final int currentPage,
-			@Parameter(description = "Number of results returned per page.") @RequestParam(defaultValue = MAX_INTEGER) final int pageSize,
-			@Parameter(description = "Only products from this catalog are returned. The catalog must be provided along with the version.") @RequestParam(required = false) final String catalog,
-			@Parameter(description = "Only products from this catalog version are returned. The catalog version must be provided along with the catalog.") @RequestParam(required = false) final String version,
-			@Parameter(description = "Only products that are more recent than the given parameter are returned. The value should be in ISO-8601 format: 2018-01-09T16:28:45+0000.") @RequestParam(required = false) final String timestamp,
+			@Parameter(description = "The current result page requested.") @RequestParam(defaultValue = DEFAULT_PAGE_VALUE) final int currentPage,
+			@Parameter(description = "The number of results returned per page.") @RequestParam(defaultValue = MAX_INTEGER) final int pageSize,
+			@Parameter(description = "The catalog to retrieve products from. The catalog must be provided along with the version.") @RequestParam(required = false) final String catalog,
+			@Parameter(description = "The catalog version. The catalog version must be provided along with the catalog.") @RequestParam(required = false) final String version,
+			@Parameter(description = "When this parameter is set, only products modified after the given time will be returned. This parameter should be in ISO-8601 format (for example, 2018-01-09T16:28:45+0000).") @RequestParam(required = false) final String timestamp,
 			@ApiFieldsParam @RequestParam(required = false, defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		if (isEmpty(catalog) && !isEmpty(version))

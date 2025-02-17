@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 SAP SE or an SAP affiliate company. All rights reserved.
+ * Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved.
  */
 package com.sncustomwebservices.v2.controller;
 
@@ -12,7 +12,6 @@ import de.hybris.platform.commercewebservicescommons.dto.consent.ConsentTemplate
 import de.hybris.platform.commercewebservicescommons.dto.consent.ConsentTemplateWsDTO;
 import de.hybris.platform.commercewebservicescommons.errors.exceptions.ConsentWithdrawnException;
 import de.hybris.platform.servicelayer.exceptions.ModelNotFoundException;
-import de.hybris.platform.util.Sanitizer;
 import de.hybris.platform.webservicescommons.errors.exceptions.AlreadyExistsException;
 import de.hybris.platform.webservicescommons.errors.exceptions.NotFoundException;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdAndUserIdParam;
@@ -60,7 +59,7 @@ public class ConsentsController extends BaseCommerceController
 	@RequestMapping(value = "/consenttemplates", method = RequestMethod.GET)
 	@ResponseStatus(value = HttpStatus.OK)
 	@ResponseBody
-	@Operation(operationId = "getConsentTemplates", summary = "Retrieves the consents.", description = "If a customer has not given or has withdrawn their consent to the template, a date is not returned.")
+	@Operation(operationId = "getConsentTemplates", summary = "Fetch the list of consents", description = "If user has not given or withdrawn consent to any of the template, no given or withdraw date is returned.")
 	@ApiBaseSiteIdAndUserIdParam
 	public ConsentTemplateListWsDTO getConsentTemplates(
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
@@ -76,11 +75,11 @@ public class ConsentsController extends BaseCommerceController
 
 	@RequestMapping(value = "/consents", method = RequestMethod.POST)
 	@ResponseBody
-	@Operation(operationId = "doGiveConsent", summary = "Creates consent.", description = "Creates consent to collect or transfer the personal data of a customer.")
+	@Operation(operationId = "doGiveConsent", summary = "A user can give consent.", description = "A user gives consent with specified consent template and version.")
 	@ApiBaseSiteIdAndUserIdParam
 	public ResponseEntity<ConsentTemplateWsDTO> doGiveConsent(
-			@Parameter(description = "Consent template identifier.", example = "00001000", required = true) @RequestParam final String consentTemplateId,
-			@Parameter(description = "Consent template version.", example = "00001000", required = true) @RequestParam final Integer consentTemplateVersion)
+			@Parameter(description = "Consent template ID.", required = true) @RequestParam final String consentTemplateId,
+			@Parameter(description = "Consent template version.", required = true) @RequestParam final Integer consentTemplateVersion)
 	{
 		if (getUserFacade().isAnonymousUser())
 		{
@@ -109,10 +108,10 @@ public class ConsentsController extends BaseCommerceController
 	@RequestMapping(value = "/consenttemplates/{consentTemplateId}", method = RequestMethod.GET)
 	@ResponseStatus(value = HttpStatus.OK)
 	@ResponseBody
-	@Operation(operationId = "getConsentTemplate", summary = "Retrieves the consent.", description = "Retrieves the consent using the template identifier. If a customer has not given or has withdrawn their consent to the template, a date is not returned.")
+	@Operation(operationId = "getConsentTemplate", summary = "Fetch the consent.", description = "If user has not given or withdrawn consent to the template, no given or withdraw date is returned.")
 	@ApiBaseSiteIdAndUserIdParam
 	public ConsentTemplateWsDTO getConsentTemplate(
-			@Parameter(description = "Consent template identifier.", example = "00001000", required = true) @PathVariable final String consentTemplateId,
+			@Parameter(description = "Consent template id.", required = true) @PathVariable final String consentTemplateId,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 
@@ -127,10 +126,10 @@ public class ConsentsController extends BaseCommerceController
 	@RequestMapping(value = "/consents/{consentCode}", method = RequestMethod.DELETE)
 	@ResponseStatus(value = HttpStatus.OK)
 	@ResponseBody
-	@Operation(operationId = "removeConsent", summary = "Deletes the user consent.", description = "If the consent was given, then the consent is deleted. If the consent was withdrawn, then it returns a withdrawal error. If the consent doesn't exist, it returns a \"not found\" error. If the customer is anonymous, then it returns an \"access denied\" error.")
+	@Operation(operationId = "removeConsent", summary = "Withdraw the user consent for a given consent code.", description = "If the user consent was given, the consent is withdrawn. If consent was already withdrawn then returns consent already withdrawn error. If there is no such consent then returns not found. If the current user is an anonymous user then returns access denied error.")
 	@ApiBaseSiteIdAndUserIdParam
 	public void removeConsent(
-			@Parameter(description = "Consent code.", example = "0000001", required = true) @PathVariable(value = "consentCode") final String consentCode)
+			@Parameter(description = "Consent code.", required = true) @PathVariable(value = "consentCode") final String consentCode)
 	{
 		if (getUserFacade().isAnonymousUser())
 		{
@@ -149,10 +148,7 @@ public class ConsentsController extends BaseCommerceController
 		}
 		catch (final IllegalArgumentException e)
 		{
-			if (LOG.isWarnEnabled())
-			{
-				LOG.warn(String.format(consentNotFoundMessage, Sanitizer.sanitize(consentCode)), e);
-			}
+			LOG.warn(String.format(consentNotFoundMessage, consentCode), e);
 			throw new NotFoundException(String.format(consentNotFoundMessage, consentCode));
 		}
 		catch (final ModelNotFoundException e)

@@ -19,7 +19,6 @@ public abstract class AbstractUrlMatchingFilter extends OncePerRequestFilter
 {
 
 	public static final String BASE_SITES_ENDPOINT_PATH = "/basesites";
-	public static final String V2_MEDIAS = "/v2/medias";
 
 	protected boolean matchesUrl(final HttpServletRequest request, final String regexp)
 	{
@@ -29,7 +28,7 @@ public abstract class AbstractUrlMatchingFilter extends OncePerRequestFilter
 
 	protected String getBaseSiteValue(final HttpServletRequest request, final String regexp)
 	{
-		if (BASE_SITES_ENDPOINT_PATH.equals(getPath(request)) || isMediaUrl(request))
+		if (BASE_SITES_ENDPOINT_PATH.equals(getPath(request)))
 		{
 			return null;
 		}
@@ -40,11 +39,6 @@ public abstract class AbstractUrlMatchingFilter extends OncePerRequestFilter
 			return matcher.group().substring(1);
 		}
 		return null;
-	}
-
-	private boolean isMediaUrl(final HttpServletRequest request)
-	{
-		return request.getServletPath() != null && V2_MEDIAS.equals(request.getServletPath());
 	}
 
 	protected String getValue(final HttpServletRequest request, final String regexp)

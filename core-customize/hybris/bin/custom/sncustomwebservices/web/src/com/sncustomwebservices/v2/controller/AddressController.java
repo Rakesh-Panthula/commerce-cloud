@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 SAP SE or an SAP affiliate company. All rights reserved.
+ * Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved.
  */
 package com.sncustomwebservices.v2.controller;
 
@@ -78,7 +78,7 @@ public class AddressController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getAddresses", summary = "Retrieves the addresses of a customer.", description = "Retrieves a list of all the addresses associated with a customer.")
+	@Operation(operationId = "getAddresses", summary = "Get customer's addresses", description = "Returns customer's addresses.")
 	@ApiBaseSiteIdAndUserIdParam
 	@ApiResponse(responseCode = "200", description = "List of customer's addresses")
 	public AddressListWsDTO getAddresses(@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
@@ -97,7 +97,7 @@ public class AddressController extends BaseCommerceController
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ResponseStatus(value = HttpStatus.CREATED)
-	@Operation(hidden = true, summary = "Creates an address.", description = "Creates an address for the customer.")
+	@Operation(hidden = true, summary = "Creates a new address.", description = "Creates a new address.")
 	@Parameter(name = "baseSiteId", description = "Base site identifier", required = true, schema = @Schema(type = "string"), in = ParameterIn.PATH)
 	@Parameter(name = "userId", description = "User identifier", required = true, schema = @Schema(type = "string"), in = ParameterIn.PATH)
 	@Parameter(name = "firstName", description = "Customer's first name", required = true, schema = @Schema(type = "string"), in = ParameterIn.QUERY)
@@ -146,10 +146,10 @@ public class AddressController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{addressId}", method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getAddress", summary = "Retrieves the address details of a customer.", description = "Returns detailed information about address with a given id.")
+	@Operation(operationId = "getAddress", summary = "Get info about address", description = "Returns detailed information about address with a given id.")
 	@ApiBaseSiteIdAndUserIdParam
 	public AddressWsDTO getAddress(
-			@Parameter(description = "Address identifier.", example = "00000001", required = true) @PathVariable final String addressId,
+			@Parameter(description = "Address identifier.", required = true) @PathVariable final String addressId,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		LOG.debug("getAddress: id={}", sanitize(addressId));
@@ -164,10 +164,10 @@ public class AddressController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{addressId}", method = RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(hidden = true, summary = "Updates the address of a customer.", description = "Updates the address of a customer. Attributes not provided in the request will be defined again (set to null or default).")
+	@Operation(hidden = true, summary = "Updates the address", description = "Updates the address. Attributes not provided in the request will be defined again (set to null or default).")
 	@ApiBaseSiteIdAndUserIdAndAddressParams
 	public void replaceAddress(
-			@Parameter(description = "Address identifier.", example = "00000001", required = true) @PathVariable final String addressId,
+			@Parameter(description = "Address identifier.", required = true) @PathVariable final String addressId,
 			final HttpServletRequest request)
 	{
 		LOG.debug("editAddress: id={}", sanitize(addressId));
@@ -208,10 +208,10 @@ public class AddressController extends BaseCommerceController
 	@RequestMapping(value = "/{addressId}", method = RequestMethod.PUT, consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(operationId = "replaceAddress", summary = "Updates the address of a customer.", description = "Updates the address. Attributes not provided in the request will be defined again (set to null or default).")
+	@Operation(operationId = "replaceAddress", summary = "Updates the address", description = "Updates the address. Attributes not provided in the request will be defined again (set to null or default).")
 	@ApiBaseSiteIdAndUserIdParam
 	public void replaceAddress(
-			@Parameter(description = "Address identifier.", example = "00000001", required = true) @PathVariable final String addressId,
+			@Parameter(description = "Address identifier.", required = true) @PathVariable final String addressId,
 			@Parameter(description = "Address object.", required = true) @RequestBody final AddressWsDTO address)
 	{
 		validate(address, OBJECT_NAME_ADDRESS, getAddressDTOValidator());
@@ -234,11 +234,11 @@ public class AddressController extends BaseCommerceController
 	@Deprecated(since = "2005", forRemoval = true)
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{addressId}", method = RequestMethod.PATCH)
-	@Operation(hidden = true, summary = "Updates the address of a customer.", description = "Updates the address associated with a customer. Only the attributes provided in the request body will be changed.")
+	@Operation(hidden = true, summary = "Updates the address", description = "Updates the address. Only attributes provided in the request body will be changed.")
 	@ApiBaseSiteIdAndUserIdAndAddressParams
 	@ResponseStatus(HttpStatus.OK)
 	public void updateAddress(
-			@Parameter(description = "Address identifier.", example = "00000001", required = true) @PathVariable final String addressId,
+			@Parameter(description = "Address identifier.", required = true) @PathVariable final String addressId,
 			final HttpServletRequest request)
 	{
 		LOG.debug("editAddress: id={}", sanitize(addressId));
@@ -274,7 +274,7 @@ public class AddressController extends BaseCommerceController
 	@ApiBaseSiteIdAndUserIdParam
 	@ResponseStatus(HttpStatus.OK)
 	public void updateAddress(
-			@Parameter(description = "Address identifier.", example = "00000001", required = true) @PathVariable final String addressId,
+			@Parameter(description = "Address identifier.", required = true) @PathVariable final String addressId,
 			@Parameter(description = "Address object", required = true) @RequestBody final AddressWsDTO address)
 	{
 		final AddressData addressData = getAddressData(addressId);
@@ -298,11 +298,11 @@ public class AddressController extends BaseCommerceController
 
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{addressId}", method = RequestMethod.DELETE)
-	@Operation(operationId = "removeAddress", summary = "Deletes the address of a customer.", description = "Deletes the address of a customer, which means the address records are erased.")
+	@Operation(operationId = "removeAddress", summary = "Delete customer's address.", description = "Removes customer's address.")
 	@ApiBaseSiteIdAndUserIdParam
 	@ResponseStatus(HttpStatus.OK)
 	public void removeAddress(
-			@Parameter(description = "Address identifier.", example = "00000001", required = true) @PathVariable final String addressId)
+			@Parameter(description = "Address identifier.", required = true) @PathVariable final String addressId)
 	{
 		LOG.debug("removeAddress: id={}", sanitize(addressId));
 		final AddressData address = getAddressData(addressId);
@@ -354,7 +354,7 @@ public class AddressController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_CLIENT", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/verification", method = RequestMethod.POST, consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
-	@Operation(operationId = "validateAddress", summary = "Verifies the address.", description = "Validates the address of a customer.")
+	@Operation(operationId = "validateAddress", summary = "Verifies address.", description = "Verifies provided address.")
 	@ApiBaseSiteIdAndUserIdParam
 	@ResponseBody
 	public AddressValidationWsDTO validateAddress(

@@ -53,7 +53,7 @@ public class CatalogsController extends BaseController
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getCatalogs", summary = "Retrieves a list of catalogs.", description = "")
+	@Operation(operationId = "getCatalogs", summary = "Get a list of catalogs", description = "Returns all catalogs with versions defined for the base store.")
 	@ApiBaseSiteIdParam
 	public CatalogListWsDTO getCatalogs(@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
@@ -71,10 +71,10 @@ public class CatalogsController extends BaseController
 
 	@RequestMapping(value = "/{catalogId}", method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getCatalog", summary = "Retrieves a catalog.", description = "Retrieves information about the catalog using catalog identifier.")
+	@Operation(operationId = "getCatalog", summary = "Get a catalog", description = "Returns information about a catalog based on its ID, along with the versions defined for the current base store.")
 	@ApiBaseSiteIdParam
 	public CatalogWsDTO getCatalog(
-			@Parameter(description = "Catalog identifier.", required = true) @PathVariable final String catalogId,
+			@Parameter(description = "Catalog identifier", required = true) @PathVariable final String catalogId,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		final CatalogData catalogData = catalogFacade.getProductCatalogForCurrentSite(catalogId, OPTIONS);
@@ -88,11 +88,11 @@ public class CatalogsController extends BaseController
 
 	@RequestMapping(value = "/{catalogId}/{catalogVersionId}", method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getCatalogVersion", summary = "Retrieves information about the catalog version.", description = "Retrieves information about the catalog version using catalog identifier and catalog version identifier.")
+	@Operation(operationId = "getCatalogVersion", summary = "Get information about catalog version", description = "Returns information about the catalog version that exists for the current base store.")
 	@ApiBaseSiteIdParam
 	public CatalogVersionWsDTO getCatalogVersion(
-			@Parameter(description = "Catalog identifier.", required = true) @PathVariable final String catalogId,
-			@Parameter(description = "Catalog version identifier.", required = true) @PathVariable final String catalogVersionId,
+			@Parameter(description = "Catalog identifier", required = true) @PathVariable final String catalogId,
+			@Parameter(description = "Catalog version identifier", required = true) @PathVariable final String catalogVersionId,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		final CatalogVersionData catalogVersionData = catalogFacade.getProductCatalogVersionForTheCurrentSite(catalogId,
@@ -108,12 +108,12 @@ public class CatalogsController extends BaseController
 
 	@RequestMapping(value = "/{catalogId}/{catalogVersionId}/categories/{categoryId}", method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getCategories", summary = "Retrieves information about the category.", description = "Retrieves information about the category that exists in a catalog version available.")
+	@Operation(operationId = "getCategories", summary = "Get information about catagory in a catalog version", description = "Returns information about a specified category that exists in a catalog version available for the current base store.")
 	@ApiBaseSiteIdParam
 	public CategoryHierarchyWsDTO getCategories(
-			@Parameter(description = "Catalog identifier.", required = true) @PathVariable final String catalogId,
-			@Parameter(description = "Catalog version identifier.", required = true) @PathVariable final String catalogVersionId,
-			@Parameter(description = "Category identifier.", required = true) @PathVariable final String categoryId,
+			@Parameter(description = "Catalog identifier", required = true) @PathVariable final String catalogId,
+			@Parameter(description = "Catalog version identifier", required = true) @PathVariable final String catalogVersionId,
+			@Parameter(description = "Category identifier", required = true) @PathVariable final String categoryId,
 			@ApiFieldsParam @RequestParam(defaultValue = "DEFAULT") final String fields)
 	{
 		final PageOption page = PageOption.createForPageNumberAndPageSize(0, 10);

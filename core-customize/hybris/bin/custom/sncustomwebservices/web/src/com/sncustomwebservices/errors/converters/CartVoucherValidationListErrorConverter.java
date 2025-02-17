@@ -5,6 +5,7 @@ package com.sncustomwebservices.errors.converters;
 
 import de.hybris.platform.webservicescommons.dto.error.ErrorWsDTO;
 import de.hybris.platform.webservicescommons.errors.converters.AbstractErrorConverter;
+import com.sncustomwebservices.validation.data.CartVoucherValidationData;
 import com.sncustomwebservices.validation.data.CartVoucherValidationDataList;
 
 import java.util.List;

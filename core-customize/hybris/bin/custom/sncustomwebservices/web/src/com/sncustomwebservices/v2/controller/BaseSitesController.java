@@ -36,7 +36,7 @@ public class BaseSitesController extends BaseController
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getBaseSites", summary = "Retrieves the base sites.", description = "Retrieves the base sites and the details of the corresponding base stores.")
+	@Operation(operationId = "getBaseSites", summary = "Get all base sites.", description = "Get all base sites with corresponding base stores details in FULL mode.")
 	public BaseSiteListWsDTO getBaseSites(@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		final List<BaseSiteData> allBaseSites = baseSiteFacade.getAllBaseSites();

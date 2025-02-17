@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 

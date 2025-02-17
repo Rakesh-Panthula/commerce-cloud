@@ -1,10 +1,8 @@
 /*
- * Copyright (c) 2024 SAP SE or an SAP affiliate company. All rights reserved.
+ * Copyright (c) 2023 SAP SE or an SAP affiliate company. All rights reserved.
  */
 package com.sncustomwebservices.v2.filter;
 
-import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
-import de.hybris.platform.commerceservices.enums.SiteChannel;
 import de.hybris.platform.commerceservices.user.UserMatchingService;
 import de.hybris.platform.core.model.user.UserModel;
 import de.hybris.platform.servicelayer.exceptions.UnknownIdentifierException;
@@ -19,8 +17,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import de.hybris.platform.site.BaseSiteService;
-import de.hybris.platform.util.Sanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -28,6 +24,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+
 
 /**
  * Filter that puts user from the requested url into the session.
@@ -38,7 +35,6 @@ public class UserMatchingFilter extends AbstractUrlMatchingFilter
 	public static final String ROLE_CUSTOMERGROUP = "ROLE_CUSTOMERGROUP";
 	public static final String ROLE_CUSTOMERMANAGERGROUP = "ROLE_CUSTOMERMANAGERGROUP";
 	public static final String ROLE_TRUSTED_CLIENT = "ROLE_TRUSTED_CLIENT";
-	public static final String ROLE_B2BGROUP = "ROLE_B2BGROUP";
 	public static final String HTTP_HEADER_NAME_USER_ID = "sap-commerce-cloud-user-id";
 	private static final String CURRENT_USER = "current";
 	private static final String ANONYMOUS_USER = "anonymous";
@@ -49,15 +45,12 @@ public class UserMatchingFilter extends AbstractUrlMatchingFilter
 	private UserService userService;
 	private SessionService sessionService;
 	private UserMatchingService userMatchingService;
-	private BaseSiteService baseSiteService;
 
 	@Override
 	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
 			final FilterChain filterChain) throws ServletException, IOException
 	{
-		final BaseSiteModel currentBaseSite = getBaseSiteService().getCurrentBaseSite();
 		final Authentication auth = getAuth();
-		logRoles(auth);
 		if (hasRole(ROLE_CUSTOMERGROUP, auth) || hasRole(ROLE_CUSTOMERMANAGERGROUP, auth))
 		{
 			getSessionService().setAttribute(ACTING_USER_UID, auth.getPrincipal());
@@ -75,13 +68,11 @@ public class UserMatchingFilter extends AbstractUrlMatchingFilter
 			{
 				// fallback to anonymous
 				setCurrentUser(userService.getAnonymousUser());
-				LOG.debug("set user to anonymous user");
 			}
 		}
 		else if (userID.equals(ANONYMOUS_USER) && !hasRole(ROLE_CUSTOMERGROUP, auth))
 		{
 			setCurrentUser(userService.getAnonymousUser());
-			LOG.debug("set user to anonymous user");
 		}
 		else if (hasRole(ROLE_TRUSTED_CLIENT, auth) || hasRole(ROLE_CUSTOMERMANAGERGROUP, auth))
 		{
@@ -98,45 +89,20 @@ public class UserMatchingFilter extends AbstractUrlMatchingFilter
 			LOG.error(errInfo);
 			throw new AccessDeniedException("Access is denied");
 		}
-		checkB2CUserAccess(auth, currentBaseSite);
 
 		filterChain.doFilter(request, response);
 	}
 
-	private void logRoles(final Authentication auth)
+	protected boolean hasRole(final String role, final Authentication auth)
 	{
-		if (auth == null)
-		{
-			LOG.debug("auth is null");
-		}
-		else
+		if (auth != null)
 		{
 			for (final GrantedAuthority ga : auth.getAuthorities())
 			{
-				if (LOG.isDebugEnabled())
+				if (ga.getAuthority().equals(role))
 				{
-					LOG.debug(String.format("contains role %s", Sanitizer.sanitize(ga.getAuthority())));
+					return true;
 				}
-			}
-		}
-	}
-
-	protected boolean hasRole(final String role, final Authentication auth)
-	{
-		if (auth == null)
-		{
-			return false;
-		}
-
-		for (final GrantedAuthority ga : auth.getAuthorities())
-		{
-			if (ga.getAuthority().equals(role))
-			{
-				if (LOG.isDebugEnabled())
-				{
-					LOG.debug(String.format("contains role %s", Sanitizer.sanitize(ga.getAuthority())));
-				}
-				return true;
 			}
 		}
 		return false;
@@ -178,19 +144,18 @@ public class UserMatchingFilter extends AbstractUrlMatchingFilter
 
 	protected void setCurrentUserForCustomerGroupRole(final String principal, final String userID)
 	{
-		String property = userID;
+
 		if (userID.equals(CURRENT_USER))
 		{
-			property = principal;
+			setCurrentUser(principal);
 		}
-		setCurrentUser(getUserForValidProperty(principal, property).orElseThrow(() -> {
-			if (LOG.isErrorEnabled())
-			{
-				LOG.error(String.format("Try to access resource for %s with token for %s", Sanitizer.sanitize(userID),
-						Sanitizer.sanitize(principal)));
-			}
-			return new AccessDeniedException("Access is denied");
-		}));
+		else
+		{
+			setCurrentUser(getUserForValidProperty(principal, userID).orElseThrow(() -> {
+				LOG.error(String.format("Try to access resource for %s with token for %s", userID, principal));
+				return new AccessDeniedException("Access is denied");
+			}));
+		}
 	}
 
 	protected Optional<UserModel> getUserForValidProperty(final String principal, final String propertyValue)
@@ -218,24 +183,6 @@ public class UserMatchingFilter extends AbstractUrlMatchingFilter
 	protected String getRegexp()
 	{
 		return regexp;
-	}
-
-	private boolean isB2BChannelWithAuthenticationRequired(BaseSiteModel currentBaseSite) {
-		return currentBaseSite.getChannel() != null
-				&& SiteChannel.B2B.getCode().equals(currentBaseSite.getChannel().getCode())
-				&& currentBaseSite.isRequiresAuthentication();
-	}
-
-	private boolean isB2CCustomer(final Authentication auth) {
-		return !hasRole(ROLE_B2BGROUP, auth) && hasRole(ROLE_CUSTOMERGROUP, auth);
-	}
-
-	private void checkB2CUserAccess(final Authentication auth, final BaseSiteModel currentBaseSite)
-	{
-		if (isB2CCustomer(auth) && isB2BChannelWithAuthenticationRequired(currentBaseSite))
-		{
-			throw new AccessDeniedException("A B2C customer cannot access API endpoints on a B2B site.");
-		}
 	}
 
 	@Required
@@ -276,15 +223,4 @@ public class UserMatchingFilter extends AbstractUrlMatchingFilter
 	{
 		this.userMatchingService = userMatchingService;
 	}
-
-	protected BaseSiteService getBaseSiteService()
-	{
-		return baseSiteService;
-	}
-
-	public void setBaseSiteService(BaseSiteService baseSiteService)
-	{
-		this.baseSiteService = baseSiteService;
-	}
-
 }

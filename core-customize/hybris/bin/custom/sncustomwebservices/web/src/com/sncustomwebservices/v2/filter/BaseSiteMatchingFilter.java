@@ -5,7 +5,7 @@ package com.sncustomwebservices.v2.filter;
 
 import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
 import de.hybris.platform.site.BaseSiteService;
-import de.hybris.platform.util.Sanitizer;
+import de.hybris.platform.webservicescommons.util.YSanitizer;
 import com.sncustomwebservices.exceptions.InvalidResourceException;
 
 import javax.servlet.FilterChain;
@@ -49,7 +49,7 @@ public class BaseSiteMatchingFilter extends AbstractUrlMatchingFilter
 			}
 			else
 			{
-				final InvalidResourceException ex = new InvalidResourceException(Sanitizer.sanitize(baseSiteID));
+				final InvalidResourceException ex = new InvalidResourceException(YSanitizer.sanitize(baseSiteID));
 				LOG.debug(ex.getMessage());
 				throw ex;
 			}

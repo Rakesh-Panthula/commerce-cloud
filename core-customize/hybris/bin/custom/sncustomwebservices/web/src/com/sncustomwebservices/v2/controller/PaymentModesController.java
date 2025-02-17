@@ -41,7 +41,7 @@ public class PaymentModesController extends BaseController
 
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.GET)
-	@Operation(operationId = "getPaymentModes", summary = "Retrieves the available payment modes.", description = "Retrieves the payment modes defined for the base store.")
+	@Operation(operationId = "getPaymentModes", summary = "Gets all available payment modes.", description = "Gets all payment modes defined for the base store.")
 	@ApiBaseSiteIdParam
 	public PaymentModeListWsDTO getPaymentModes(
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)

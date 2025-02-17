@@ -21,7 +21,7 @@ import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.site.BaseSiteService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
-import de.hybris.platform.util.Sanitizer;
+import de.hybris.platform.webservicescommons.util.YSanitizer;
 import com.sncustomwebservices.constants.YcommercewebservicesConstants;
 import com.sncustomwebservices.context.ContextInformationLoader;
 // <v1-api>
@@ -76,7 +76,7 @@ public class DefaultContextInformationLoader implements ContextInformationLoader
 			}
 			catch (final UnknownIdentifierException e)
 			{
-				throw new UnsupportedLanguageException("Language  " + Sanitizer.sanitize(languageString) + " is not supported", e);
+				throw new UnsupportedLanguageException("Language  " + YSanitizer.sanitize(languageString) + " is not supported", e);
 			}
 		}
 
@@ -140,7 +140,7 @@ public class DefaultContextInformationLoader implements ContextInformationLoader
 			}
 			catch (final UnknownIdentifierException e)
 			{
-				throw new UnsupportedCurrencyException("Currency " + Sanitizer.sanitize(currencyString) + " is not supported", e);
+				throw new UnsupportedCurrencyException("Currency " + YSanitizer.sanitize(currencyString) + " is not supported", e);
 			}
 		}
 
@@ -195,7 +195,7 @@ public class DefaultContextInformationLoader implements ContextInformationLoader
 				}
 				catch (final CalculationException e)
 				{
-					throw new RecalculationException(e, Sanitizer.sanitize(currencyString));
+					throw new RecalculationException(e, YSanitizer.sanitize(currencyString));
 				}
 			}
 		}
@@ -233,7 +233,7 @@ public class DefaultContextInformationLoader implements ContextInformationLoader
 		final String requestMapping = getRequestMapping(requestURL);
 		if (LOG.isDebugEnabled())
 		{
-			LOG.debug("Requested resource : " + Sanitizer.sanitize(requestMapping));
+			LOG.debug("Requested resource : " + YSanitizer.sanitize(requestMapping));
 		}
 		if (requestMapping == null || isNotBaseSiteResource(requestMapping))
 		{
@@ -255,7 +255,7 @@ public class DefaultContextInformationLoader implements ContextInformationLoader
 		}
 		else
 		{
-			throw new InvalidResourceException(Sanitizer.sanitize(baseSiteUid));
+			throw new InvalidResourceException(YSanitizer.sanitize(baseSiteUid));
 		}
 
 		return requestedBaseSite;
@@ -265,7 +265,7 @@ public class DefaultContextInformationLoader implements ContextInformationLoader
 	{
 		if (LOG.isDebugEnabled())
 		{
-			LOG.debug("Processing request : " + Sanitizer.sanitize(queryString));
+			LOG.debug("Processing request : " + YSanitizer.sanitize(queryString));
 		}
 
 		int rootContextIndex = -1;
@@ -311,7 +311,7 @@ public class DefaultContextInformationLoader implements ContextInformationLoader
 
 		if (LOG.isDebugEnabled())
 		{
-			LOG.debug("Parsed base site uid: " + Sanitizer.sanitize(result));
+			LOG.debug("Parsed base site uid: " + YSanitizer.sanitize(result));
 		}
 		return result;
 	}

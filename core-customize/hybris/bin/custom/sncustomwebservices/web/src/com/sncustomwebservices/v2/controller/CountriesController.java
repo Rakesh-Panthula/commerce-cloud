@@ -54,8 +54,9 @@ public class CountriesController extends BaseCommerceController
 	@RequestMapping(method = RequestMethod.GET)
 	@Cacheable(value = "countriesCache", key = "T(de.hybris.platform.commercewebservicescommons.cache.CommerceCacheKeyGenerator).generateKey(false,false,'getCountries',#type,#fields)")
 	@ResponseBody
-	@Operation(operationId = "getCountries", summary = "Retrieves a list of countries.", description =
-				"Retrieves a list of shipping or billing countries. Set the type parameter to SHIPPING to retrieve the shipping countries. Set the type parameter to BILLING to retrieve the billing countries. Leave the type parameter blank to retrieve all of the countries. The list is sorted alphabetically.")
+	@Operation(operationId = "getCountries", summary = "Get a list of countries.", description =
+			"If the value of type equals to shipping, then return shipping countries. If the value of type equals to billing, then return billing countries."
+					+ " If the value of type is not given, return all countries. The list is sorted alphabetically.")
 	@ApiBaseSiteIdParam
 	public CountryListWsDTO getCountries(
 			@Parameter(description = "The type of countries.", schema = @Schema(allowableValues = { "SHIPPING",
@@ -78,7 +79,7 @@ public class CountriesController extends BaseCommerceController
 	@ResponseStatus(value = HttpStatus.OK)
 	@ResponseBody
 	@Cacheable(value = "countriesCache", key = "T(de.hybris.platform.commercewebservicescommons.cache.CommerceCacheKeyGenerator).generateKey(false,false,'getRegionsForCountry',#countyIsoCode,#fields)")
-	@Operation(operationId = "getCountryRegions", summary = "Retrieves a list of regions.", description = "Retrieves the list of regions in a country.")
+	@Operation(operationId = "getCountryRegions", summary = "Fetch the list of regions for the provided country.", description = "Lists all regions.")
 	@ApiBaseSiteIdParam
 	public RegionListWsDTO getCountryRegions(
 			@Parameter(description = "An ISO code for a country", required = true) @PathVariable final String countyIsoCode,

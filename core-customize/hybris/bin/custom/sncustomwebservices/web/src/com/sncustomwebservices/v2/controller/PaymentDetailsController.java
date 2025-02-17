@@ -54,10 +54,10 @@ public class PaymentDetailsController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getPaymentDetailsList", summary = "Retrieves all credit card payment details of the customer.", description = "Retrieves all credit card payment details made by the customer.")
+	@Operation(operationId = "getPaymentDetailsList", summary = "Get customer's credit card payment details list.", description = "Return customer's credit card payment details list.")
 	@ApiBaseSiteIdAndUserIdParam
 	public PaymentDetailsListWsDTO getPaymentDetailsList(
-			@Parameter(description = "The flag to mark if the detailed payment is a saved one.") @RequestParam(defaultValue = "false") final boolean saved,
+			@Parameter(description = "Type of payment details.") @RequestParam(defaultValue = "false") final boolean saved,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		LOG.debug("getPaymentDetailsList");
@@ -71,7 +71,7 @@ public class PaymentDetailsController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{paymentDetailsId}", method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getPaymentDetails", summary = "Retrieves detailed information for a specific credit card payment.", description = "Retrieves specific credit card payment details made by the customer using the paymentDetailsId.")
+	@Operation(operationId = "getPaymentDetails", summary = "Get customer's credit card payment details.", description = "Returns a customer's credit card payment details for the specified paymentDetailsId.")
 	@ApiBaseSiteIdAndUserIdParam
 	public PaymentDetailsWsDTO getPaymentDetails(
 			@Parameter(description = "Payment details identifier.", required = true) @PathVariable final String paymentDetailsId,
@@ -102,7 +102,7 @@ public class PaymentDetailsController extends BaseCommerceController
 
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{paymentDetailsId}", method = RequestMethod.DELETE)
-	@Operation(operationId = "removePaymentDetails", summary = "Deletes detailed information for a specific credit card payment.", description = "Deletes specific credit card payment details made by the customer using the paymentDetailsId.")
+	@Operation(operationId = "removePaymentDetails", summary = "Deletes customer's credit card payment details.", description = "Deletes a customer's credit card payment details based on a specified paymentDetailsId.")
 	@ApiBaseSiteIdAndUserIdParam
 	@ResponseStatus(HttpStatus.OK)
 	public void removePaymentDetails(
@@ -119,9 +119,9 @@ public class PaymentDetailsController extends BaseCommerceController
 	@Deprecated(since = "2005", forRemoval = true)
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{paymentDetailsId}", method = RequestMethod.PATCH)
-	@Operation(hidden = true, summary = "Updates existing detailed information for a specific credit card payment. ", description =
-			"Updates existing credit card payment details made by the customer using the paymentDetailsId. "
-			+ "Only those attributes provided in the request will be updated.")
+	@Operation(hidden = true, summary = "Updates existing customer's credit card payment details. ", description =
+			"Updates an existing customer's credit card payment "
+					+ "details based on the specified paymentDetailsId. Only those attributes provided in the request will be updated.")
 	@ApiBaseSiteIdAndUserIdAndPaymentDetailsParams
 	@ResponseStatus(HttpStatus.OK)
 	public void updatePaymentDetails(
@@ -150,9 +150,9 @@ public class PaymentDetailsController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{paymentDetailsId}", method = RequestMethod.PATCH, consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
-	@Operation(operationId = "updatePaymentDetails", summary = "Updates existing detailed information for a specific credit card payment. ", description =
-			"Updates existing credit card payment details made by the customer using the paymentDetailsId. "
-					+ "Only those attributes provided in the request will be updated.")
+	@Operation(operationId = "updatePaymentDetails", summary = "Updates existing customer's credit card payment details.", description =
+			"Updates an existing customer's credit card payment details based "
+					+ "on the specified paymentDetailsId. Only those attributes provided in the request will be updated.")
 	@ApiBaseSiteIdAndUserIdParam
 	@ResponseStatus(HttpStatus.OK)
 	public void updatePaymentDetails(
@@ -181,9 +181,9 @@ public class PaymentDetailsController extends BaseCommerceController
 	@Deprecated(since = "2005", forRemoval = true)
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{paymentDetailsId}", method = RequestMethod.PUT)
-	@Operation(hidden = true, summary = "Updates existing detailed information for a specific credit card payment. ", description =
-			"Updates existing credit card payment details made by the customer using the paymentDetailsId. "
-			+ "Attributes not given in request will be defined again (set to null or default).")
+	@Operation(hidden = true, summary = "Updates existing customer's credit card payment details. ", description =
+			"Updates existing customer's credit card payment "
+					+ "info based on the payment info ID. Attributes not given in request will be defined again (set to null or default).")
 	@ApiBaseSiteIdAndUserIdAndPaymentDetailsParams
 	@ResponseStatus(HttpStatus.OK)
 	public void replacePaymentDetails(
@@ -236,9 +236,9 @@ public class PaymentDetailsController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{paymentDetailsId}", method = RequestMethod.PUT, consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
-	@Operation(operationId = "replacePaymentDetails", summary = "Updates existing detailed information for a specific credit card payment. ", description =
-			"Updates existing credit card payment details made by the customer using the paymentDetailsId. "
-			+ "Attributes not given in request will be defined again (set to null or default).")
+	@Operation(operationId = "replacePaymentDetails", summary = "Updates existing customer's credit card payment info.", description =
+			"Updates existing customer's credit card payment info based on the "
+					+ "payment info ID. Attributes not given in request will be defined again (set to null or default).")
 	@ApiBaseSiteIdAndUserIdParam
 	@ResponseStatus(HttpStatus.OK)
 	public void replacePaymentDetails(

@@ -52,7 +52,7 @@ public class FutureStocksController extends BaseCommerceController
 	@GetMapping(produces = APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
-	@Operation(operationId = "getFutureStocksList", summary = "Retrieves the future availability of the products.", description = "Retrieves the products and their future availabilities.")
+	@Operation(operationId = "getFutureStocksList", summary = "Gets the future product availability for the list of specified products.", description = "Returns a list of product codes with a list of future product availability.")
 	@ApiBaseSiteIdAndUserIdParam
 	public ProductFutureStocksListWsDTO getFutureStocksList(
 			@Parameter(description = "Products identifiers.", example = "3318057,72399000_55,72399000_56", required = true) @RequestParam final String productCodes,
@@ -75,10 +75,10 @@ public class FutureStocksController extends BaseCommerceController
 	@GetMapping(value = "/{productCode}", produces = APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
-	@Operation(operationId = "getFutureStocks", summary = "Retrieves the future availability of a product.")
+	@Operation(operationId = "getFutureStocks", summary = "Gets the future product availability for the specified product.", description = "Returns a list of future product availability of the specified product.")
 	@ApiBaseSiteIdAndUserIdParam
 	public ProductFutureStocksWsDTO getFutureStocks(
-			@Parameter(description = "Product identifier.", required = true) @PathVariable final String productCode,
+			@Parameter(description = "Product identifier", required = true) @PathVariable final String productCode,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		final List<FutureStockData> futureStockList = futureStockFacade.getFutureAvailability(productCode);

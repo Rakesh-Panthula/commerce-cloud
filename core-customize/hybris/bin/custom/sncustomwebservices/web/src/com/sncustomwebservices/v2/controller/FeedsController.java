@@ -18,9 +18,9 @@ import java.util.List;
 
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -40,11 +40,11 @@ public class FeedsController extends BaseController
 	private OrderStatusUpdateQueue orderStatusUpdateQueue;
 
 	@Secured("ROLE_TRUSTED_CLIENT")
-	@GetMapping(value = "/orders/statusfeed")
+	@RequestMapping(value = "/orders/statusfeed", method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getOrderStatusFeed", summary = "Retrieves a list of orders with status updates.", description =
-			"Retrieves the orders that have changed status. Only the properties from the current baseSite"
-					+ " that have been updated after the specified timestamp are returned.")
+	@Operation(operationId = "getOrderStatusFeed", summary = "Get a list of orders with status updates.", description =
+			"Returns the orders that have changed status. Returns only the elements from the "
+					+ "current baseSite that have been updated after the provided timestamp.")
 	public OrderStatusUpdateElementListWsDTO getOrderStatusFeed(
 			@Parameter(description = "Only items newer than the given parameter are retrieved. This parameter should be in ISO-8601 format (for example, 2018-01-09T16:28:45+0000).", required = true) @RequestParam final String timestamp,
 			@Parameter(description = "Base site identifier", required = true) @PathVariable final String baseSiteId,

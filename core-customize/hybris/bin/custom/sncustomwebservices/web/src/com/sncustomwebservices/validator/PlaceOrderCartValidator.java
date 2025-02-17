@@ -35,7 +35,7 @@ public class PlaceOrderCartValidator implements Validator
 			errors.reject("cart.deliveryModeNotSet");
 		}
 
-		if (cart.getPaymentInfo() == null && cart.getSapGenericPaymentInfo() == null)
+		if (cart.getPaymentInfo() == null)
 		{
 			errors.reject("cart.paymentInfoNotSet");
 		}

@@ -48,33 +48,4 @@
 			</map>
 		</property>
 	</bean>
-
-	<alias name="defaultSkipOrderFieldValueSetter" alias="skipOrderFieldValueSetter"/>
-	<bean id="defaultSkipOrderFieldValueSetter"
-		  class="com.sncustomwebservices.skipfield.SkipOrderFieldValueSetter"
-		  parent="abstractSkipFieldValueSetter"/>
-	<alias name="defaultSkipCartFieldValueSetter" alias="skipCartFieldValueSetter"/>
-	<bean id="defaultSkipCartFieldValueSetter"
-		  class="com.sncustomwebservices.skipfield.SkipCartFieldValueSetter"
-		  parent="abstractSkipFieldValueSetter"/>
-	<alias name="defaultSkipCartListFieldValueSetter" alias="skipCartListFieldValueSetter"/>
-	<bean id="defaultSkipCartListFieldValueSetter"
-		  class="com.sncustomwebservices.skipfield.SkipCartListFieldValueSetter"
-		  parent="abstractSkipFieldValueSetter"/>
-	<alias name="defaultSkipSaveCartResultFieldValueSetter" alias="skipSaveCartResultFieldValueSetter"/>
-	<bean id="defaultSkipSaveCartResultFieldValueSetter"
-		  class="com.sncustomwebservices.skipfield.SkipSaveCartResultFieldValueSetter"
-		  parent="abstractSkipFieldValueSetter"/>
-	<alias name="defaultSkipReturnRequestFieldValueSetter" alias="skipReturnRequestFieldValueSetter"/>
-	<bean id="defaultSkipReturnRequestFieldValueSetter"
-		  class="com.sncustomwebservices.skipfield.SkipReturnRequestFieldValueSetter"
-		  parent="abstractSkipFieldValueSetter"/>
-	<alias name="defaultSkipReturnRequestListFieldValueSetter" alias="skipReturnRequestListFieldValueSetter"/>
-	<bean id="defaultSkipReturnRequestListFieldValueSetter"
-		  class="com.sncustomwebservices.skipfield.SkipReturnRequestListFieldValueSetter"
-		  parent="abstractSkipFieldValueSetter"/>
-	<alias name="defaultRequestFromValueSetter" alias="requestFromValueSetter"/>
-	<bean id="defaultRequestFromValueSetter"
-		  class="com.sncustomwebservices.requestfrom.RequestFromValueSetter"
-		  parent="abstractRequestFromValueSetter"/>
 </beans>

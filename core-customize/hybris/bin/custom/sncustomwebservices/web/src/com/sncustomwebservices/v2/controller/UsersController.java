@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 SAP SE or an SAP affiliate company. All rights reserved.
+ * Copyright (c) 2023 SAP SE or an SAP affiliate company. All rights reserved.
  */
 package com.sncustomwebservices.v2.controller;
 
@@ -13,21 +13,17 @@ import de.hybris.platform.commercewebservicescommons.annotation.CaptchaAware;
 import de.hybris.platform.commercewebservicescommons.annotation.SecurePortalUnauthenticatedAccess;
 import de.hybris.platform.commercewebservicescommons.annotation.SiteChannelRestriction;
 import de.hybris.platform.commercewebservicescommons.constants.CommercewebservicescommonsConstants;
-import de.hybris.platform.commercewebservicescommons.dto.user.ReplaceLoginIdInputWsDTO;
-import de.hybris.platform.commercewebservicescommons.dto.user.ReplacePasswordInputWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.user.UserGroupListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.user.UserSignUpWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.user.UserWsDTO;
 import de.hybris.platform.commercewebservicescommons.errors.exceptions.RequestParameterException;
 import de.hybris.platform.converters.Populator;
 import de.hybris.platform.servicelayer.exceptions.UnknownIdentifierException;
-import de.hybris.platform.util.Sanitizer;
 import de.hybris.platform.webservicescommons.cache.CacheControl;
 import de.hybris.platform.webservicescommons.cache.CacheControlDirective;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdAndUserIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiFieldsParam;
-
 import com.sncustomwebservices.constants.YcommercewebservicesConstants;
 import com.sncustomwebservices.populator.HttpRequestCustomerDataPopulator;
 
@@ -51,7 +47,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -135,7 +130,7 @@ public class UsersController extends BaseCommerceController
 			userId = login.toLowerCase(Locale.ENGLISH);
 			customer = customerFacade.getUserForUID(userId);
 		}
-		httpResponse.setHeader(YcommercewebservicesConstants.LOCATION, getAbsoluteLocationURL(httpRequest, Sanitizer.sanitize(userId)));
+		httpResponse.setHeader(YcommercewebservicesConstants.LOCATION, getAbsoluteLocationURL(httpRequest, userId));
 		return getDataMapper().map(customer, UserWsDTO.class, fields);
 	}
 
@@ -214,7 +209,7 @@ public class UsersController extends BaseCommerceController
 			LOG.debug("Duplicated UID", ex);
 		}
 		final String userId = user.getUid().toLowerCase(Locale.ENGLISH);
-		httpResponse.setHeader(YcommercewebservicesConstants.LOCATION, getAbsoluteLocationURL(httpRequest, Sanitizer.sanitize(userId)));
+		httpResponse.setHeader(YcommercewebservicesConstants.LOCATION, getAbsoluteLocationURL(httpRequest, userId));
 		final CustomerData customerData = getCustomerData(registerData, userExists, userId);
 		return getDataMapper().map(customerData, UserWsDTO.class, fields);
 	}
@@ -258,7 +253,7 @@ public class UsersController extends BaseCommerceController
 	@RequestMapping(value = "/{userId}", method = RequestMethod.GET)
 	@ResponseBody
 	@SiteChannelRestriction(allowedSiteChannelsProperty = API_COMPATIBILITY_B2C_CHANNELS)
-	@Operation(operationId = "getUser", summary = "Retrieves the customer profile.")
+	@Operation(operationId = "getUser", summary = "Get customer profile", description = "Returns customer profile.")
 	@ApiBaseSiteIdAndUserIdParam
 	public UserWsDTO getUser(@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
@@ -273,7 +268,7 @@ public class UsersController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(hidden = true, summary = "Updates the customer profile.", description = "Updates the customer profile. Attributes not provided in the request body will be defined again (set to null or default).")
+	@Operation(hidden = true, summary = "Updates customer profile", description = "Updates customer profile. Attributes not provided in the request body will be defined again (set to null or default).")
 	@Parameter(name = "baseSiteId", description = "Base site identifier", required = true, schema = @Schema(type = "string"), in = ParameterIn.PATH)
 	@Parameter(name = "userId", description = "User identifier.", required = true, schema = @Schema(type = "string"), in = ParameterIn.PATH)
 	@Parameter(name = "language", description = "Customer's language.", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY)
@@ -300,7 +295,7 @@ public class UsersController extends BaseCommerceController
 	@RequestMapping(value = "/{userId}", method = RequestMethod.PUT, consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(operationId = "replaceUser", summary = "Updates the customer profile.", description = "Updates customer profile. Attributes not provided in the request body will be defined again (set to null or default).")
+	@Operation(operationId = "replaceUser", summary = "Updates customer profile", description = "Updates customer profile. Attributes not provided in the request body will be defined again (set to null or default).")
 	@ApiBaseSiteIdAndUserIdParam
 	public void replaceUser(@Parameter(description = "User's object", required = true) @RequestBody final UserWsDTO user)
 			throws DuplicateUidException
@@ -321,7 +316,7 @@ public class UsersController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{userId}", method = RequestMethod.PATCH)
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(hidden = true, summary = "Updates the customer profile.", description = "Updates the customer profile. Only attributes provided in the request body will be changed.")
+	@Operation(hidden = true, summary = "Updates customer profile", description = "Updates customer profile. Only attributes provided in the request body will be changed.")
 	@Parameter(name = "baseSiteId", description = "Base site identifier", required = true, schema = @Schema(type = "string"), in = ParameterIn.PATH)
 	@Parameter(name = "userId", description = "User identifier", required = true, schema = @Schema(type = "string"), in = ParameterIn.PATH)
 	@Parameter(name = "firstName", description = "Customer's first name", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY)
@@ -361,7 +356,7 @@ public class UsersController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(operationId = "removeUser", summary = "Deletes the customer profile.")
+	@Operation(operationId = "removeUser", summary = "Delete customer profile.", description = "Removes customer profile.")
 	@ApiBaseSiteIdAndUserIdParam
 	public void removeUser()
 	{
@@ -369,18 +364,14 @@ public class UsersController extends BaseCommerceController
 		LOG.debug("removeUser: userId={}", customer.getUid());
 	}
 
-	/**
-	 * @deprecated (since "2211.23", forRemoval = false. Use POST method instead.)
-	 */
-	@Deprecated(since = "2211.23", forRemoval = false)
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{userId}/login", method = RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(operationId = "replaceUserLogin", summary = "Changes customer's login name.", description = "Changes a customer's login name. Requires the customer's current password. This endpoint is deprecated in the 2211.23 update and its deletion is planned. Please use the POST /{baseSiteId}/users/{userId}/login instead.")
+	@Operation(operationId = "replaceUserLogin", summary = "Changes customer's login name.", description = "Changes a customer's login name. Requires the customer's current password.")
 	@ApiBaseSiteIdAndUserIdParam
 	public void replaceUserLogin(
-			@Parameter(description = "New login name of a customer. The name is case insensitive.", required = true) @RequestParam final String newLogin,
-			@Parameter(description = "Current password of a customer.", required = true) @RequestParam final String password)
+			@Parameter(description = "Customer's new login name. Customer login is case insensitive.", required = true) @RequestParam final String newLogin,
+			@Parameter(description = "Customer's current password.", required = true) @RequestParam final String password)
 			throws DuplicateUidException
 	{
 		if (!EmailValidator.getInstance().isValid(newLogin))
@@ -391,43 +382,10 @@ public class UsersController extends BaseCommerceController
 		customerFacade.changeUid(newLogin, password);
 	}
 
-	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
-	@PostMapping(value = "/{userId}/login", consumes = { MediaType.APPLICATION_JSON_VALUE })
-	@ResponseStatus(HttpStatus.OK)
-	@Operation(operationId = "changeUserLoginId", summary = "Changes customer's login id.", description = "Changes a customer's login id. Requires the customer's current password. This endpoint is added in the 2211.23 update.")
-	@ApiBaseSiteIdAndUserIdParam
-	public void replaceUserLogin(@RequestBody final ReplaceLoginIdInputWsDTO request) throws DuplicateUidException
-	{
-		final String newLoginId = request.getNewLoginId();
-		if (!EmailValidator.getInstance().isValid(newLoginId))
-		{
-			throw new RequestParameterException("LoginId [" + sanitize(newLoginId) + "] is invalid e-mail address!",
-					RequestParameterException.INVALID, "newLoginId");
-		}
-		customerFacade.changeUid(newLoginId, request.getPassword());
-	}
-
-	@Secured({ "ROLE_CUSTOMERGROUP" })
-	@PostMapping(value = "/{userId}/password", consumes = { MediaType.APPLICATION_JSON_VALUE })
-	@ResponseStatus(value = HttpStatus.OK)
-	@Operation(operationId = "changeUserPassword", summary = "Updates the password of a customer.", description = "Updates the password of a customer. This endpoint is added in the 2211.23 update.")
-	@ApiBaseSiteIdAndUserIdParam
-	public void replaceUserPassword(@RequestBody final ReplacePasswordInputWsDTO request)
-	{
-		final UserSignUpWsDTO customer = new UserSignUpWsDTO();
-		customer.setPassword(request.getNewPassword());
-		validate(customer, "password", passwordStrengthValidator);
-		customerFacade.changePassword(request.getOldPassword(), request.getNewPassword());
-	}
-	
-	/**
-	 * @deprecated (since "2211.23", forRemoval = false. Use POST method instead.)
-	 */
-	@Deprecated(since = "2211.23", forRemoval = false)
-	@Secured({ "ROLE_CUSTOMERGROUP" })
+	@Secured({ "ROLE_CUSTOMERGROUP"})
 	@RequestMapping(value = "/{userId}/password", method = RequestMethod.PUT)
 	@ResponseStatus(value = HttpStatus.ACCEPTED)
-	@Operation(operationId = "replaceUserPassword",summary = "Updates the password of a customer.", description = "Updates the password of a customer. This endpoint is deprecated in the 2211.23 update and its deletion is planned. Please use the POST /{baseSiteId}/users/{userId}/password instead.")
+	@Operation(operationId = "replaceUserPassword", summary = "Changes customer's password", description = "Changes customer's password.")
 	@ApiBaseSiteIdAndUserIdParam
 	public void replaceUserPassword(
 			@Parameter(description = "User identifier.", required = true) @PathVariable final String userId,
@@ -455,7 +413,7 @@ public class UsersController extends BaseCommerceController
 
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{userId}/customergroups", method = RequestMethod.GET)
-	@Operation(operationId = "getUserCustomerGroups", summary = "Retrieves the customer groups.")
+	@Operation(operationId = "getUserCustomerGroups", summary = "Get all customer groups of a customer.", description = "Returns all customer groups of a customer.")
 	@ApiBaseSiteIdAndUserIdParam
 	@ResponseBody
 	public UserGroupListWsDTO getUserCustomerGroups(

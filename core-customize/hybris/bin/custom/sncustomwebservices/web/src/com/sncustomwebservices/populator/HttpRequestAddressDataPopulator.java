@@ -11,8 +11,7 @@ import de.hybris.platform.commercefacades.user.data.RegionData;
 import de.hybris.platform.commercewebservicescommons.errors.exceptions.RequestParameterException;
 import de.hybris.platform.converters.Populator;
 import de.hybris.platform.servicelayer.exceptions.UnknownIdentifierException;
-import de.hybris.platform.util.Sanitizer;
-
+import de.hybris.platform.webservicescommons.util.YSanitizer;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -124,7 +123,7 @@ public class HttpRequestAddressDataPopulator extends AbstractHttpRequestDataPopu
 			}
 			catch (final UnknownIdentifierException e)
 			{
-				throw new RequestParameterException("No country with the code " + Sanitizer.sanitize(countryIsoCode) + " found",
+				throw new RequestParameterException("No country with the code " + YSanitizer.sanitize(countryIsoCode) + " found",
 						RequestParameterException.UNKNOWN_IDENTIFIER, COUNTRY, e);
 			}
 			if (countryDataFromFacade != null)
@@ -133,7 +132,7 @@ public class HttpRequestAddressDataPopulator extends AbstractHttpRequestDataPopu
 			}
 			else
 			{
-				throw new RequestParameterException("No country with the code " + Sanitizer.sanitize(countryIsoCode) + " found",
+				throw new RequestParameterException("No country with the code " + YSanitizer.sanitize(countryIsoCode) + " found",
 						RequestParameterException.UNKNOWN_IDENTIFIER, COUNTRY);
 			}
 		}
@@ -153,7 +152,7 @@ public class HttpRequestAddressDataPopulator extends AbstractHttpRequestDataPopu
 			}
 			catch (final UnknownIdentifierException ex)
 			{
-				throw new RequestParameterException("No region with the code " + Sanitizer.sanitize(regionIsoCode) + " found.",
+				throw new RequestParameterException("No region with the code " + YSanitizer.sanitize(regionIsoCode) + " found.",
 						RequestParameterException.UNKNOWN_IDENTIFIER, REGION, ex);
 			}
 			if (regionDataFromFacade != null)
@@ -162,7 +161,7 @@ public class HttpRequestAddressDataPopulator extends AbstractHttpRequestDataPopu
 			}
 			else
 			{
-				throw new RequestParameterException("No region with the code " + Sanitizer.sanitize(regionIsoCode) + " found.",
+				throw new RequestParameterException("No region with the code " + YSanitizer.sanitize(regionIsoCode) + " found.",
 						RequestParameterException.UNKNOWN_IDENTIFIER, REGION);
 			}
 		}

@@ -16,6 +16,10 @@
 
 	<context:annotation-config/>
 
+	<!-- <v1-api> -->
+	<!-- Uncomment to enable version v1 -->
+	<!--<import resource="config/v1-web-spring.xml"/>-->
+	<!-- </v1-api> -->
 
 	<import resource="config/v2-web-spring.xml"/>
 

@@ -15,7 +15,7 @@ import de.hybris.platform.servicelayer.util.ServicesUtil;
 import de.hybris.platform.site.BaseSiteService;
 import de.hybris.platform.storelocator.model.PointOfServiceModel;
 import de.hybris.platform.storelocator.pos.PointOfServiceService;
-import de.hybris.platform.util.Sanitizer;
+import de.hybris.platform.webservicescommons.util.YSanitizer;
 import com.sncustomwebservices.stock.CommerceStockFacade;
 import com.sncustomwebservices.strategies.BaseStoreForSiteSelectorStrategy;
 
@@ -44,7 +44,7 @@ public class DefaultCommerceStockFacade implements CommerceStockFacade
 		final BaseSiteModel baseSiteModel = getBaseSiteService().getBaseSiteForUID(baseSiteId);
 		if (baseSiteModel == null)
 		{
-			throw new UnknownIdentifierException("Base site with uid '" + Sanitizer.sanitize(baseSiteId) + "' not found!");
+			throw new UnknownIdentifierException("Base site with uid '" + YSanitizer.sanitize(baseSiteId) + "' not found!");
 		}
 
 		return getCommerceStockService().isStockSystemEnabled(getBaseStoreForSiteSelectorStrategy().getBaseStore(baseSiteModel));
@@ -59,7 +59,7 @@ public class DefaultCommerceStockFacade implements CommerceStockFacade
 		final BaseSiteModel baseSiteModel = getBaseSiteService().getBaseSiteForUID(baseSiteId);
 		if (baseSiteModel == null)
 		{
-			throw new UnknownIdentifierException("Base site with uid '" + Sanitizer.sanitize(baseSiteId) + "' not found!");
+			throw new UnknownIdentifierException("Base site with uid '" + YSanitizer.sanitize(baseSiteId) + "' not found!");
 		}
 
 		final ProductModel productModel = getProductService().getProductForCode(productCode);

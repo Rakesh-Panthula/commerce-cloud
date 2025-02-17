@@ -3,9 +3,6 @@
  */
 package com.sncustomwebservices.request.redirection;
 
-
-import de.hybris.platform.util.Sanitizer;
-
 import java.io.IOException;
 
 import javax.servlet.Filter;
@@ -115,14 +112,14 @@ public class OAuthRedirectionFilter implements Filter
 		final String newUrl = getFinalUrl(httpRequest);
 
 		httpResponse.setStatus(redirectStatus);
-		httpResponse.addHeader("Location", Sanitizer.sanitize(newUrl));
+		httpResponse.addHeader("Location", newUrl);
 	}
 
 	protected String getFinalUrl(final HttpServletRequest httpRequest)
 	{
 		String uri = httpRequest.getRequestURI();
 		uri = uri.replace(httpRequest.getContextPath(), oauthWebRoot);
-		final String queryString = httpRequest.getQueryString();
+		final String queryString = sanitizeQueryString(httpRequest.getQueryString());
 		if (queryString != null)
 		{
 			uri += "?" + queryString;
@@ -164,10 +161,7 @@ public class OAuthRedirectionFilter implements Filter
 
 		return absoluteURL;
 	}
-	/**
-	 * @deprecated since 2211.26. Use {@link Sanitizer} instead
-	 */
-	@Deprecated(since = "2211.26", forRemoval = true )
+
 	protected static String sanitizeQueryString(final String queryString)
 	{
 		// clean input
@@ -176,5 +170,4 @@ public class OAuthRedirectionFilter implements Filter
 		output = output.replaceAll("(\\r\\n|\\r|\\n|%0D|%0d|%0A|%0a)+", "");
 		return output;
 	}
-
 }

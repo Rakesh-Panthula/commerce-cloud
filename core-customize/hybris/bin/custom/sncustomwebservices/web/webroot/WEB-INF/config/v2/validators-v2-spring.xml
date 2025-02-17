@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- Copyright (c) 2024 SAP SE or an SAP affiliate company. All rights reserved.
+ Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved.
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -360,29 +360,12 @@
 		<property name="enumerationService" ref="enumerationService"/>
 	</bean>
 
-    	<alias alias="guestUserDTOValidator" name="defaultGuestUserDTOValidator"/>
-    	<bean id="defaultGuestUserDTOValidator"
-          class="de.hybris.platform.webservicescommons.validators.CompositeValidator">
-        	<property name="validators">
-            		<list>
-                		<bean class="de.hybris.platform.webservicescommons.validators.OptionalFieldValidator">
-                    			<property name="fieldPath" value="email"/>
-                    			<constructor-arg>
-                        			<bean class="de.hybris.platform.webservicescommons.validators.EmailValidator">
-                            				<property name="fieldPath" value="email"/>
-                        			</bean>
-                    			</constructor-arg>
-                		</bean>
-            		</list>
-        	</property>
-    	</bean>
-
-    	<!-- Beans for user matching in commerce web services -->
-    	<alias name="defaultWsPrincipalListDTOValidator" alias="wsPrincipalListDTOValidator"/>
-    	<bean id="defaultWsPrincipalListDTOValidator" parent="defaultPrincipalListDTOValidator">
-        	<property name="canBeEmpty" value="false"/>
-        	<property name="userMatchingService" ref="wsUserMatchingService"/>
-    	</bean>
+	<!-- Beans for user matching in commerce web services -->
+	<alias name="defaultWsPrincipalListDTOValidator" alias="wsPrincipalListDTOValidator" />
+	<bean id="defaultWsPrincipalListDTOValidator" parent="defaultPrincipalListDTOValidator" >
+		<property name="canBeEmpty" value="false" />
+		<property name="userMatchingService" ref="wsUserMatchingService" />
+	</bean >
 
 	<alias name="defaultWsUserGroupDTOValidator" alias="wsUserGroupDTOValidator" />
 	<bean id="defaultWsUserGroupDTOValidator"
@@ -434,57 +417,5 @@
 		  name="pointOfServiceValidatorForUserWsDTO">
 		<property name="pointOfServiceService" ref="pointOfServiceService"/>
 		<property name="fieldPath" value="defaultPointOfServiceName"/>
-	</bean>
-
-	<alias name="defaultCreateVerificationTokenInputValidator" alias="createVerificationTokenInputValidator"/>
-	<bean id="defaultCreateVerificationTokenInputValidator"
-		  class="de.hybris.platform.webservicescommons.validators.CompositeValidator">
-		<property name="validators">
-			<list merge="true">
-				<bean class="de.hybris.platform.webservicescommons.validators.FieldNotEmptyValidator">
-					<property name="fieldPath" value="purpose"/>
-				</bean>
-				<ref bean="verificationTokenPasswordValidator"/>
-				<bean class="de.hybris.platform.webservicescommons.validators.EmailValidator">
-					<property name="fieldPath" value="loginId"/>
-				</bean>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="verificationTokenPasswordValidator"
-		  class="com.sncustomwebservices.validator.VerificationTokenPasswordValidator">
-		<property name="fieldPath" value="password"/>
-	</bean>
-
-	<bean id="passwordRestoreTokenInputValidator"
-		  class="de.hybris.platform.webservicescommons.validators.EmailValidator">
-		<property name="fieldPath" value="loginId"/>
-	</bean>
-
-	<alias name="defaultSAPBillingAddressValidator" alias="sapBillingAddressValidator"/>
-	<bean id="defaultSAPBillingAddressValidator"
-		  class="de.hybris.platform.webservicescommons.validators.CompositeValidator">
-		<property name="validators">
-			<list>
-				<bean class="de.hybris.platform.webservicescommons.validators.FieldNotEmptyValidator">
-					<property name="fieldPath" value="firstName"/>
-				</bean>
-				<bean class="de.hybris.platform.webservicescommons.validators.FieldNotEmptyValidator">
-					<property name="fieldPath" value="lastName"/>
-				</bean>
-				<bean class="de.hybris.platform.webservicescommons.validators.FieldNotEmptyValidator">
-					<property name="fieldPath" value="line1"/>
-				</bean>
-				<bean class="de.hybris.platform.webservicescommons.validators.FieldNotEmptyOrTooLongValidator">
-					<property name="fieldPath" value="postalCode"/>
-					<property name="maxLength" value="10"/>
-				</bean>
-				<bean class="de.hybris.platform.webservicescommons.validators.FieldNotEmptyOrTooLongValidator">
-					<property name="fieldPath" value="country.isocode"/>
-					<property name="maxLength" value="2"/>
-				</bean>
-			</list>
-		</property>
 	</bean>
 </beans>

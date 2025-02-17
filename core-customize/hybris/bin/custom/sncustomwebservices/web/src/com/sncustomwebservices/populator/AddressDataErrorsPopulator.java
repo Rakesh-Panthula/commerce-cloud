@@ -7,6 +7,7 @@ import de.hybris.platform.commercefacades.address.data.AddressVerificationErrorF
 import de.hybris.platform.commercefacades.address.data.AddressVerificationResult;
 import de.hybris.platform.commerceservices.address.AddressVerificationDecision;
 import de.hybris.platform.converters.Populator;
+import de.hybris.platform.servicelayer.dto.converter.ConversionException;
 
 import java.util.Map;
 

@@ -3,19 +3,14 @@
  */
 package com.sncustomwebservices.v2.controller;
 
-import de.hybris.platform.acceleratorfacades.order.data.PriceRangeData;
 import de.hybris.platform.catalog.enums.ProductReferenceTypeEnum;
 import de.hybris.platform.commercefacades.catalog.CatalogFacade;
 import de.hybris.platform.commercefacades.product.ProductFacade;
 import de.hybris.platform.commercefacades.product.ProductOption;
-import de.hybris.platform.commercefacades.product.data.ImageData;
-import de.hybris.platform.commercefacades.product.data.PriceData;
 import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commercefacades.product.data.ProductReferenceData;
 import de.hybris.platform.commercefacades.product.data.ProductReferencesData;
-import de.hybris.platform.commercefacades.product.data.PromotionData;
 import de.hybris.platform.commercefacades.product.data.ReviewData;
-import de.hybris.platform.commercefacades.product.data.SAPUnitData;
 import de.hybris.platform.commercefacades.product.data.StockData;
 import de.hybris.platform.commercefacades.product.data.SuggestionData;
 import de.hybris.platform.commercefacades.search.ProductSearchFacade;
@@ -38,7 +33,6 @@ import de.hybris.platform.commercewebservicescommons.dto.store.StoreFinderStockS
 import de.hybris.platform.commercewebservicescommons.errors.exceptions.RequestParameterException;
 import de.hybris.platform.commercewebservicescommons.errors.exceptions.StockSystemException;
 import de.hybris.platform.converters.Populator;
-import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.webservicescommons.cache.CacheControl;
 import de.hybris.platform.webservicescommons.cache.CacheControlDirective;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdParam;
@@ -56,9 +50,9 @@ import com.sncustomwebservices.validator.PointOfServiceValidator;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
@@ -67,13 +61,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -91,6 +78,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 /**
@@ -110,7 +106,6 @@ public class ProductsController extends BaseController
 	private static final int CATALOG_VERSION_POS = 1;
 	private static final String COMMA_SEPARATOR = ",";
 	private static final Logger LOG = LoggerFactory.getLogger(ProductsController.class);
-	private static final String CONSIDER_FIELDS_KEY = "toggle.occ.retrieving.product.performance.improvement.enabled";
 
 	@Resource(name = "storeFinderStockFacade")
 	private StoreFinderStockFacade storeFinderStockFacade;
@@ -136,37 +131,22 @@ public class ProductsController extends BaseController
 	private CatalogFacade catalogFacade;
 	@Resource(name = "productsHelper")
 	private ProductsHelper productsHelper;
-	@Resource(name = "configurationService")
-	private ConfigurationService configurationService;
 
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getProducts", summary = "Retrieves a list of products.", description =
-			"Retrieves a list of products and related product search data, such as available attributes， available facets, available sorting, and spelling suggestions."
-			+ " To enable spelling suggestions, you need to have indexed properties configured to be used for spell checking.")
+	@Operation(operationId = "getProducts", summary = "Get a list of products and additional data", description =
+			"Returns a list of products and additional data, such as available facets, "
+					+ "available sorting, and pagination options. It can also include spelling suggestions. To make spelling suggestions work, you need to make sure "
+					+ "that \"enableSpellCheck\" on the SearchQuery is set to \"true\" (by default, it should already be set to \"true\"). You also need to have indexed "
+					+ "properties configured to be used for spellchecking.")
 	@ApiBaseSiteIdParam
 	public ProductSearchPageWsDTO getProducts(
-			@Parameter(description = "Filter conditions that combine attribute keys and attribute values. The attributes are the fields or properties for the Product type configured in the search index type."
-					+ " The format is <attributeKey1>:<attributeValue1>:...:<attributeKeyN>:<attributeValueN>.") @RequestParam(required = false) final String filters,
-			@Parameter(description = "Formatted query string. It contains query criteria like free text search, facet. The format is <freeTextSearch>:<sort>:<facetKey1>:<facetValue1>:...:<facetKeyN>:<facetValueN>.") @RequestParam(required = false) final String query,
-			@Parameter(description = "Current result page. Default value is 0.") @RequestParam(defaultValue = DEFAULT_CURRENT_PAGE) final int currentPage,
-			@Parameter(description = "Number of results returned per page.") @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) final int pageSize,
+			@Parameter(description = "Serialized query, free text search, facets. The format of a serialized query: freeTextSearch:sort:facetKey1:facetValue1:facetKey2:facetValue2") @RequestParam(required = false) final String query,
+			@Parameter(description = "The current result page requested.") @RequestParam(defaultValue = DEFAULT_CURRENT_PAGE) final int currentPage,
+			@Parameter(description = "The number of results returned per page.") @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) final int pageSize,
 			@Parameter(description = "Sorting method applied to the return results.") @RequestParam(required = false) final String sort,
-			@Parameter(description = "Name of the search query template to be used in the search query. Examples: DEFAULT, SUGGESTIONS.") @RequestParam(required = false) final String searchQueryContext,
+			@Parameter(description = "The context to be used in the search query.") @RequestParam(required = false) final String searchQueryContext,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields, final HttpServletResponse response)
-	{
-		final ProductSearchPageWsDTO result = productsHelper.searchProducts(filters, query, currentPage, pageSize, sort, addPaginationField(fields), searchQueryContext);
-		setTotalCountHeader(response, result.getPagination());
-		return result;
-	}
-
-	/**
-	 * @deprecated since 2211.28, use {@link ProductsController#getProducts(String, String, int, int, String, String, String, HttpServletResponse)}
-	 *             instead.
-	 */
-	@Deprecated(since = "2211.28", forRemoval = true)
-	public ProductSearchPageWsDTO getProducts(final String query, final int currentPage, final int pageSize, final String sort, final String searchQueryContext,
-			final String fields, final HttpServletResponse response)
 	{
 		final ProductSearchPageWsDTO result = productsHelper.searchProducts(query, currentPage, pageSize, sort,
 				addPaginationField(fields), searchQueryContext);
@@ -176,10 +156,10 @@ public class ProductsController extends BaseController
 
 
 	@RequestMapping(value = "/search", method = RequestMethod.HEAD)
-	@Operation(operationId = "countProducts", summary = "Retrieves the total number of products.", description = "In the response header, the \"x-total-count\" property indicates the total number of products for the query.")
+	@Operation(operationId = "countProducts", summary = "Get a header with total number of products.", description = "In the response header, the \"x-total-count\" indicates the total number of products satisfying a query.")
 	@ApiBaseSiteIdParam
 	public void countProducts(
-			@Parameter(description = "Formatted query string. It contains query criteria like free text search, facet. The format is <freeTextSearch>:<sort>:<facetKey1>:<facetValue1>:...:<facetKeyN>:<facetValueN>.") @RequestParam(required = false) final String query,
+			@Parameter(description = "Serialized query, free text search, facets. The format of a serialized query: freeTextSearch:sort:facetKey1:facetValue1:facetKey2:facetValue2") @RequestParam(required = false) final String query,
 			final HttpServletResponse response)
 	{
 		final ProductSearchPageData<SearchStateData, ProductData> result = productsHelper.searchProducts(query, 0, 1, null);
@@ -189,79 +169,27 @@ public class ProductsController extends BaseController
 
 	@RequestMapping(value = "/{productCode}", method = RequestMethod.GET)
 	@CacheControl(directive = CacheControlDirective.PRIVATE, maxAge = 120)
-	@Cacheable(value = "productCache", key = "T(de.hybris.platform.commercewebservicescommons.cache.ProductCacheKeyGenerator).generateKey(true,true,#productCode,#fields)")
+	@Cacheable(value = "productCache", key = "T(de.hybris.platform.commercewebservicescommons.cache.CommerceCacheKeyGenerator).generateKey(true,true,#productCode,#fields)")
 	@ResponseBody
-	@Operation(operationId = "getProduct", summary = "Retrieves product details.", description = "Retrieves the details of a single product using the product identifier.")
+	@Operation(operationId = "getProduct", summary = "Get product details.", description = "Returns details of a single product according to a product code.")
 	@ApiBaseSiteIdParam
 	public ProductWsDTO getProduct(
-			@Parameter(description = "Product identifier.", required = true) @PathVariable final String productCode,
+			@Parameter(description = "Product identifier", required = true) @PathVariable final String productCode,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
-		boolean isConsiderFields = configurationService.getConfiguration().getBoolean(CONSIDER_FIELDS_KEY, true);
-		Collection<ProductOption> options = isConsiderFields?extractProductOptions(fields):EnumSet.allOf(ProductOption.class);
-		if(LOG.isDebugEnabled()) {
-			LOG.debug("getProduct: code={} | options={}", sanitize(productCode), options);
-		}
-
-		final ProductData product = productFacade.getProductForCodeAndOptions(productCode, options);return getDataMapper().map(product, ProductWsDTO.class, fields);
+		LOG.debug("getProduct: code={} | options={}", sanitize(productCode), PRODUCT_OPTIONS_SET);
+		final ProductData product = productFacade.getProductForCodeAndOptions(productCode, PRODUCT_OPTIONS_SET);
+		return getDataMapper().map(product, ProductWsDTO.class, fields);
 	}
 
-	protected Collection<ProductOption> extractProductOptions(final String fields)
-	{
-		final ProductData tempProductData = new ProductData();
-		tempProductData.setImages(Lists.newArrayList(new ImageData()));
-		tempProductData.setReviews(Lists.newArrayList(new ReviewData()));
-		tempProductData.setNumberOfReviews(Integer.valueOf(0));
-		tempProductData.setPotentialPromotions(Lists.newArrayList(new PromotionData()));
-		tempProductData.setPrice(new PriceData());
-		tempProductData.setPurchasable(Boolean.FALSE);
-		tempProductData.setPriceRange(new PriceRangeData());
-		tempProductData.setStock(new StockData());
-		tempProductData.setSapUnit(new SAPUnitData());
-
-		final ProductWsDTO productWsDTO = getDataMapper().map(tempProductData, ProductWsDTO.class, fields);
-		final boolean skipImages = CollectionUtils.isEmpty(productWsDTO.getImages());
-		final EnumSet<ProductOption> options = EnumSet.allOf(ProductOption.class);
-		if (skipImages)
-		{
-			options.remove(ProductOption.IMAGES);
-			options.remove(ProductOption.GALLERY);
-		}
-		final boolean skipReviews = CollectionUtils.isEmpty(productWsDTO.getReviews()) && productWsDTO.getNumberOfReviews() == null;
-		if (skipReviews)
-		{
-			options.remove(ProductOption.REVIEW);
-		}
-		final boolean skipPromotions = CollectionUtils.isEmpty(productWsDTO.getPotentialPromotions());
-		if (skipPromotions)
-		{
-			options.remove(ProductOption.PROMOTIONS);
-		}
-		final boolean skipPrice = productWsDTO.getPrice() == null && productWsDTO.getPurchasable() == null && productWsDTO.getSapUnit() == null;
-		if (skipPrice)
-		{
-			options.remove(ProductOption.PRICE);
-		}
-		final boolean skipPriceRange = productWsDTO.getPriceRange() == null;
-		if (skipPriceRange)
-		{
-			options.remove(ProductOption.PRICE_RANGE);
-		}
-		final boolean skipStock = productWsDTO.getStock() == null;
-		if (skipStock)
-		{
-			options.remove(ProductOption.STOCK);
-		}
-		return options;
-	}
 
 	@RequestMapping(value = "/{productCode}/stock/{storeName}", method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getStoreProductStock", summary = "Retrieves the stock level of a product.", description = "Retrieves the stock level of a product for the store.")
+	@Operation(operationId = "getStoreProductStock", summary = "Get a product's stock level for a store", description = "Returns a product's stock level for a particular store (in other words, for a particular point of sale).")
 	public StockWsDTO getStoreProductStock(
-			@Parameter(description = "Base site identifier.", required = true) @PathVariable final String baseSiteId,
-			@Parameter(description = "Product identifier.", required = true) @PathVariable final String productCode,
-			@Parameter(description = "Store identifier.", required = true) @PathVariable final String storeName,
+			@Parameter(description = "Base site identifier", required = true) @PathVariable final String baseSiteId,
+			@Parameter(description = "Product identifier", required = true) @PathVariable final String productCode,
+			@Parameter(description = "Store identifier", required = true) @PathVariable final String storeName,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		validate(storeName, "storeName", pointOfServiceValidator);
@@ -276,18 +204,18 @@ public class ProductsController extends BaseController
 
 	@RequestMapping(value = "/{productCode}/stock", method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getLocationProductStock", summary = "Retrieves the stock level of a product.", description =
-			"The stock levels are sorted by distance from the specified location,"
-			+ " which is defined using the free-text location parameter or the longitude and latitude parameters."
-			+ " Either location parameter or longitude and latitude parameters are required.")
+	@Operation(operationId = "getLocationProductStock", summary = "Get a product's stock level.", description =
+			"Returns a product's stock levels sorted by distance from the specified location, which is provided "
+					+ "using the free-text \"location\" parameter, or by using the longitude and latitude parameters. The following two sets of parameters are available: location "
+					+ "(required), currentPage (optional), pageSize (optional); or longitude (required), latitude (required), currentPage (optional), pageSize(optional).")
 	@ApiBaseSiteIdParam
 	public StoreFinderStockSearchPageWsDTO getLocationProductStock(
-			@Parameter(description = "Product identifier.", required = true) @PathVariable final String productCode,
+			@Parameter(description = "Product identifier", required = true) @PathVariable final String productCode,
 			@Parameter(description = "Free-text location") @RequestParam(required = false) final String location,
-			@Parameter(description = "Coordinate that specifies the north-south position of a point on the Earth's surface.") @RequestParam(required = false) final Double latitude,
-			@Parameter(description = "Coordinate that specifies the east-west position of a point on the Earth's surface.") @RequestParam(required = false) final Double longitude,
-			@Parameter(description = "Current result page. Default value is 0.") @RequestParam(required = false, defaultValue = DEFAULT_CURRENT_PAGE) final int currentPage,
-			@Parameter(description = "Number of results returned per page.") @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) final int pageSize,
+			@Parameter(description = "Latitude location parameter.") @RequestParam(required = false) final Double latitude,
+			@Parameter(description = "Longitude location parameter.") @RequestParam(required = false) final Double longitude,
+			@Parameter(description = "The current result page requested.") @RequestParam(required = false, defaultValue = DEFAULT_CURRENT_PAGE) final int currentPage,
+			@Parameter(description = "The number of results returned per page.") @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) final int pageSize,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields, final HttpServletResponse response)
 	{
 		LOG.debug("getLocationProductStock: code={}  | location={} | latitude={} | longitude={}", sanitize(productCode),
@@ -301,15 +229,15 @@ public class ProductsController extends BaseController
 
 
 	@RequestMapping(value = "/{productCode}/stock", method = RequestMethod.HEAD)
-	@Operation(operationId = "countProductStockByLocation", summary = "Retrieves the total number of stock levels of a product.", description =
-			"In the response header, the \"x-total-count\" property indicates the total number of stock levels of a product."
-			+ " Either location parameter or longitude and latitude parameters are required.")
+	@Operation(operationId = "countProductStockByLocation", summary = "Get header with a total number of product's stock levels.", description =
+			"In the response header, the \"x-total-count\" indicates the total number of a "
+					+ "product's stock levels. The following two sets of parameters are available: location (required); or longitude (required), and latitude (required).")
 	@ApiBaseSiteIdParam
 	public void countProductStockByLocation(
-			@Parameter(description = "Product identifier.", required = true) @PathVariable final String productCode,
+			@Parameter(description = "Product identifier", required = true) @PathVariable final String productCode,
 			@Parameter(description = "Free-text location") @RequestParam(required = false) final String location,
-			@Parameter(description = "Coordinate that specifies the north-south position of a point on the Earth's surface.") @RequestParam(required = false) final Double latitude,
-			@Parameter(description = "Coordinate that specifies the east-west position of a point on the Earth's surface.") @RequestParam(required = false) final Double longitude,
+			@Parameter(description = "Latitude location parameter.") @RequestParam(required = false) final Double latitude,
+			@Parameter(description = "Longitude location parameter.") @RequestParam(required = false) final Double longitude,
 			final HttpServletResponse response)
 	{
 		final StoreFinderStockSearchPageData result = doSearchProductStockByLocation(productCode, location, latitude, longitude, 0,
@@ -343,11 +271,11 @@ public class ProductsController extends BaseController
 
 	@RequestMapping(value = "/{productCode}/reviews", method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getProductReviews", summary = "Retrieves the reviews of a product.", description = "Retrieves all the reviews for a product. To limit the number of reviews returned, use the maxCount parameter.")
+	@Operation(operationId = "getProductReviews", summary = "Get reviews for a product", description = "Returns the reviews for a product with a given product code.")
 	@ApiBaseSiteIdParam
 	public ReviewListWsDTO getProductReviews(
-			@Parameter(description = "Product identifier.", required = true) @PathVariable final String productCode,
-			@Parameter(description = "Maximum number of reviews.") @RequestParam(required = false) final Integer maxCount,
+			@Parameter(description = "Product identifier", required = true) @PathVariable final String productCode,
+			@Parameter(description = "Maximum count of reviews") @RequestParam(required = false) final Integer maxCount,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		final ReviewDataList reviewDataList = new ReviewDataList();
@@ -362,14 +290,14 @@ public class ProductsController extends BaseController
 	@RequestMapping(value = "/{productCode}/reviews", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.CREATED)
 	@ResponseBody
-	@Operation(hidden = true, summary = "Creates a customer review as an anonymous user.", description = "Creates a customer review for a product as an anonymous user.")
+	@Operation(hidden = true, summary = "Creates a new customer review as an anonymous user", description = "Creates a new customer review as an anonymous user.")
 	@Parameter(name = "headline", description = "Headline of customer review", required = true, schema = @Schema(type = "string"), in = ParameterIn.QUERY)
 	@Parameter(name = "comment", description = "Comment of customer review", required = true, schema = @Schema(type = "string"), in = ParameterIn.QUERY)
 	@Parameter(name = "rating", description = "Rating of customer review", required = true, schema = @Schema(type = "double"), in = ParameterIn.QUERY)
 	@Parameter(name = "alias", description = "Alias of customer review", schema = @Schema(type = "string"), in = ParameterIn.QUERY)
 	@ApiBaseSiteIdParam
 	public ReviewWsDTO createProductReview(
-			@Parameter(description = "Product identifier.", required = true) @PathVariable final String productCode,
+			@Parameter(description = "Product identifier", required = true) @PathVariable final String productCode,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields, final HttpServletRequest request)
 	{
 		final ReviewData reviewData = new ReviewData();
@@ -384,11 +312,11 @@ public class ProductsController extends BaseController
 			MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.CREATED)
 	@ResponseBody
-	@Operation(operationId = "createProductReview", summary = "Creates a customer review as an anonymous user.", description = "Creates a customer review for a product as an anonymous user.")
+	@Operation(operationId = "createProductReview", summary = "Creates a new customer review as an anonymous user.", description = "Creates a new customer review as an anonymous user. Review data needs to be provided.")
 	@ApiBaseSiteIdParam
 	public ReviewWsDTO createProductReview(
-			@Parameter(description = "Product identifier.", required = true) @PathVariable final String productCode,
-			@Parameter(description = "Object contains review details like : rating, alias, headline, comment.", required = true) @RequestBody final ReviewWsDTO review,
+			@Parameter(description = "Product identifier", required = true) @PathVariable final String productCode,
+			@Parameter(description = "Object contains review details like : rating, alias, headline, comment", required = true) @RequestBody final ReviewWsDTO review,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		validate(review, "review", reviewDTOValidator);
@@ -400,12 +328,12 @@ public class ProductsController extends BaseController
 
 	@RequestMapping(value = "/{productCode}/references", method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getProductReferences", summary = "Retrieves the product references.", description = "Retrieves the references using the product code and reference type.")
+	@Operation(operationId = "getProductReferences", summary = "Get a product reference", description = "Returns references for a product with a given product code. Reference type specifies which references to return.")
 	@ApiBaseSiteIdParam
 	public ProductReferenceListWsDTO getProductReferences(
-			@Parameter(description = "Product identifier.", required = true) @PathVariable final String productCode,
-			@Parameter(description = "Number of results returned per page.") @RequestParam(required = false, defaultValue = MAX_INTEGER) final int pageSize,
-			@Parameter(description = "Comma-separated list of reference types. If not specified, all types of product references will be used. Example: ACCESSORIES,BASE_PRODUCT.") @RequestParam(required = false) final String referenceType,
+			@Parameter(description = "Product identifier", required = true) @PathVariable final String productCode,
+			@Parameter(description = "Maximum size of returned results.") @RequestParam(required = false, defaultValue = MAX_INTEGER) final int pageSize,
+			@Parameter(description = "Comma-separated list of reference types according to enum ProductReferenceTypeEnum. If not specified, all types of product references will be used.") @RequestParam(required = false) final String referenceType,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		final List<ProductOption> opts = Lists.newArrayList(PRODUCT_OPTIONS_SET);
@@ -451,11 +379,11 @@ public class ProductsController extends BaseController
 
 	@RequestMapping(value = "/suggestions", method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getSuggestions", summary = "Retrieves the available suggestions.", description = "Retrieves the suggestions related to a specified term and limits the results according to the value of the max parameter.")
+	@Operation(operationId = "getSuggestions", summary = "Get a list of available suggestions", description = "Returns a list of all available suggestions related to a given term and limits the results to a specific value of the max parameter.")
 	@ApiBaseSiteIdParam
 	public SuggestionListWsDTO getSuggestions(
-			@Parameter(description = "Specified term. The suggestions will be given based on it.", required = true) @RequestParam final String term,
-			@Parameter(description = "Maximum number of results.") @RequestParam(defaultValue = "10") final int max,
+			@Parameter(description = "Specified term", required = true) @RequestParam final String term,
+			@Parameter(description = "Specifies the limit of results.") @RequestParam(defaultValue = "10") final int max,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		final List<SuggestionData> suggestions = new ArrayList<>();
@@ -482,13 +410,13 @@ public class ProductsController extends BaseController
 	@Secured("ROLE_TRUSTED_CLIENT")
 	@RequestMapping(value = "/expressupdate", method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getExpressUpdateProducts", summary = "Retrieves products that were added to the express update feed.", description =
-			"Retrieves products that were added to the express update feed."
-			+ " Only the properties that were updated after the specified timestamp are returned. The queue is cleared using a defined cronjob.")
+	@Operation(operationId = "getExpressUpdateProducts", summary = "Get products added to the express update feed.", description =
+			"Returns products added to the express update feed. Returns only elements "
+					+ "updated after the provided timestamp. The queue is cleared using a defined cronjob.")
 	@ApiBaseSiteIdParam
 	public ProductExpressUpdateElementListWsDTO getExpressUpdateProducts(
-			@Parameter(description = "Only products that are more recent than the given parameter are returned. The value should be in ISO-8601 format: 2018-01-09T16:28:45+0000.", required = true) @RequestParam final String timestamp,
-			@Parameter(description = "Only products from this catalog are returned. Format: catalogId:catalogVersion.") @RequestParam(required = false) final String catalog,
+			@Parameter(description = "Only items newer than the given parameter are retrieved from the queue. This parameter should be in ISO-8601 format.", required = true) @RequestParam final String timestamp,
+			@Parameter(description = "Only products from this catalog are returned. Format: catalogId:catalogVersion") @RequestParam(required = false) final String catalog,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		final Date timestampDate;

@@ -8,13 +8,12 @@ import de.hybris.platform.commerceservices.search.pagedata.PaginationData;
 import de.hybris.platform.commercewebservicescommons.dto.search.pagedata.PaginationWsDTO;
 import de.hybris.platform.servicelayer.exceptions.ModelNotFoundException;
 import de.hybris.platform.servicelayer.exceptions.UnknownIdentifierException;
-import de.hybris.platform.util.Sanitizer;
 import de.hybris.platform.webservicescommons.dto.error.ErrorListWsDTO;
 import de.hybris.platform.webservicescommons.dto.error.ErrorWsDTO;
 import de.hybris.platform.webservicescommons.errors.exceptions.WebserviceValidationException;
 import de.hybris.platform.webservicescommons.mapping.DataMapper;
 import de.hybris.platform.webservicescommons.mapping.FieldSetLevelHelper;
-
+import de.hybris.platform.webservicescommons.util.YSanitizer;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -71,7 +70,7 @@ public class BaseController
 
 	protected static String sanitize(final String input)
 	{
-		return Sanitizer.sanitize(input);
+		return YSanitizer.sanitize(input);
 	}
 
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)

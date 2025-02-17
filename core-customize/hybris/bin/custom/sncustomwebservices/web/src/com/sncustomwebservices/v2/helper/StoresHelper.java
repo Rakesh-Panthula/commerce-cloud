@@ -77,13 +77,6 @@ public class StoresHelper extends AbstractHelper
 
 	protected double getInKilometres(final double radius, final double accuracy)
 	{
-		if ( accuracy < Double.MAX_VALUE - radius )
-		{
-			return (radius + accuracy) / 1000.0;
-		}
-		else
-		{
-			return Double.MAX_VALUE / 1000.0;
-		}
+		return (radius + accuracy) / 1000.0;
 	}
 }

@@ -1,6 +1,5 @@
 {
-    "commerceSuiteVersion": "2211",
-	"solrVersion": "9.7",
+    "commerceSuiteVersion": "2211.8",
     "enableImageProcessingService": true,
     "extensions": [
         "cloudmediaconversion",

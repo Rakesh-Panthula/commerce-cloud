@@ -58,13 +58,13 @@ public class PromotionsController extends BaseController
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@Cacheable(value = "promotionCache", key = "T(de.hybris.platform.commercewebservicescommons.cache.CommerceCacheKeyGenerator).generateKey(false,true,'getPromotions',#type,#promotionGroup,#fields)")
-	@Operation(operationId = "getPromotions", summary = "Get a list of promotions.", description =
-			"Returns promotions defined for a current base site. Requests pertaining to promotions have been developed "
+	@Operation(operationId = "getPromotions", summary = "Retrieves the promotions.", description =
+			"Retrieves the promotions defined for a current base site. Requests pertaining to promotions have been developed "
 					+ "for the previous version of promotions and vouchers and therefore some of them are currently not compatible with the new promotion engine.")
 	@ApiBaseSiteIdParam
 	public PromotionListWsDTO getPromotions(@Parameter(description =
-			"Defines what type of promotions should be returned. Values supported for that parameter are: <ul><li>all: All available promotions are "
-					+ "returned</li><li>product: Only product promotions are returned</li><li>order: Only order promotions are returned</li></ul>", schema = @Schema(allowableValues = {
+			"Type of promotions that should be returned. Possible values are: <ul><li>all: All available promotions are "
+					+ "returned. </li><li>product: Only product promotions are returned. </li><li>order: Only order promotions are returned. </li></ul>", schema = @Schema(allowableValues = {
 			"all", "product", "order" }), required = true) @RequestParam final String type,
 			@Parameter(description = "Only promotions from this group are returned") @RequestParam(required = false) final String promotionGroup,
 			@ApiFieldsParam(defaultValue = BASIC_FIELD_SET) @RequestParam(defaultValue = BASIC_FIELD_SET) final String fields)
@@ -80,8 +80,8 @@ public class PromotionsController extends BaseController
 	@RequestMapping(value = "/{code}", method = RequestMethod.GET)
 	@Cacheable(value = "promotionCache", key = "T(de.hybris.platform.commercewebservicescommons.cache.CommerceCacheKeyGenerator).generateKey(false,true,'getPromotions',#code,#fields)")
 	@ResponseBody
-	@Operation(operationId = "getPromotion", summary = "Get a promotion based on code", description =
-			"Returns details of a single promotion specified by a promotion code. Requests pertaining to "
+	@Operation(operationId = "getPromotion", summary = "Retrieves the promotion.", description =
+			"Retrieves the details of a promotion using the specified code. Requests pertaining to "
 					+ "promotions have been developed for the previous version of promotions and vouchers and therefore some of them are currently not compatible with the new promotion engine.")
 	@ApiBaseSiteIdParam
 	public PromotionWsDTO getPromotion(

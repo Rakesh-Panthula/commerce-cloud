@@ -150,7 +150,7 @@ public class CartEntriesController extends BaseCommerceController
 
 	@GetMapping(value = "/{cartId}/entries")
 	@ResponseBody
-	@Operation(operationId = "getCartEntries", summary = "Get cart entries.", description = "Returns cart entries.")
+	@Operation(operationId = "getCartEntries", summary = "Retrieves the cart entries.", description = "Retrieves a list of cart entries with the product data.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public OrderEntryListWsDTO getCartEntries(@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
@@ -163,10 +163,15 @@ public class CartEntriesController extends BaseCommerceController
 	@PostMapping(value = "/{cartId}/entries", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	@ResponseBody
 	@SiteChannelRestriction(allowedSiteChannelsProperty = API_COMPATIBILITY_B2C_CHANNELS)
-	@Operation(operationId = "createCartEntry", summary = "Adds a product to the cart.", description = "Adds a product to the specified cart.")
+	@Operation(operationId = "createCartEntry", summary = "Assigns a product to the cart.", description = "Adds a product to the specified cart.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public CartModificationWsDTO createCartEntry(@PathVariable final String baseSiteId,
-			@Parameter(description = "Request body parameter that contains details such as the product code (product.code), the quantity of product (quantity), and the pickup store name (deliveryPointOfService.name).\n\nThe DTO is in XML or .json format.", required = true) @RequestBody final OrderEntryWsDTO entry,
+			@Parameter(description = "Request body parameter that contains details such as the product code (product.code), the quantity of product (quantity),"
+					+ " and the pickup store name (deliveryPointOfService.name)."
+					+ "With the composable storefront, this was the minimum of information required:\n\n{\n"
+					+ "\"product\": {\n \"code\": \"1997551\"\n},\n\"qty\": \"1\"\n}"
+					+ "\nRequest body are the same for all storefronts."
+					+ "\n\nThe DTO is in XML or .json format.", required = true) @RequestBody final OrderEntryWsDTO entry,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 			throws CommerceCartModificationException
 	{
@@ -183,10 +188,10 @@ public class CartEntriesController extends BaseCommerceController
 
 	@GetMapping(value = "/{cartId}/entries/{entryNumber}")
 	@ResponseBody
-	@Operation(operationId = "getCartEntry", summary = "Get the details of the cart entries.", description = "Returns the details of the cart entries.")
+	@Operation(operationId = "getCartEntry", summary = "Retrieves the details of a cart entry.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public OrderEntryWsDTO getCartEntry(
-			@Parameter(description = "The entry number. Each entry in a cart has an entry number. Cart entries are numbered in ascending order, starting with zero (0).", required = true) @PathVariable final long entryNumber,
+			@Parameter(description = "Each entry in a cart has an entry number. Cart entries are numbered in ascending order, starting with zero.", required = true) @PathVariable final long entryNumber,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		LOG.debug("getCartEntry: entryNumber = {}", entryNumber);
@@ -198,12 +203,12 @@ public class CartEntriesController extends BaseCommerceController
 			MediaType.APPLICATION_XML_VALUE })
 	@ResponseBody
 	@SiteChannelRestriction(allowedSiteChannelsProperty = API_COMPATIBILITY_B2C_CHANNELS)
-	@Operation(operationId = "replaceCartEntry", summary = "Set quantity and store details of a cart entry.", description =
-			"Updates the quantity of a single cart entry and the details of the store where the cart entry will be picked up. "
-					+ "Attributes not provided in request will be defined again (set to null or default)")
+	@Operation(operationId = "replaceCartEntry", summary = "Updates the details of a cart entry.", description =
+			"Updates the quantity of a single cart entry and the details of the pickup store."
+					+ " Attributes not provided in the request will be defined again (set to null or default)")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public CartModificationWsDTO replaceCartEntry(@PathVariable final String baseSiteId,
-			@Parameter(description = "The entry number. Each entry in a cart has an entry number. Cart entries are numbered in ascending order, starting with zero (0).", required = true) @PathVariable final long entryNumber,
+			@Parameter(description = "Each entry in a cart has an entry number. Cart entries are numbered in ascending order, starting with zero.", required = true) @PathVariable final long entryNumber,
 			@Parameter(description = "Request body parameter that contains details such as the quantity of product (quantity), and the pickup store name (deliveryPointOfService.name)\n\nThe DTO is in XML or .json format.", required = true) @RequestBody final OrderEntryWsDTO entry,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 			throws CommerceCartModificationException
@@ -221,10 +226,10 @@ public class CartEntriesController extends BaseCommerceController
 	@PatchMapping(value = "/{cartId}/entries/{entryNumber}", consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
 	@ResponseBody
-	@Operation(operationId = "updateCartEntry", summary = "Update quantity and store details of a cart entry.", description = "Updates the quantity of a single cart entry and the details of the store where the cart entry will be picked up.")
+	@Operation(operationId = "updateCartEntry", summary = "Updates the details of a cart entry.", description = "Updates the quantity of a single cart entry and the details of the pickup store.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public CartModificationWsDTO updateCartEntry(@PathVariable final String baseSiteId,
-			@Parameter(description = "The entry number. Each entry in a cart has an entry number. Cart entries are numbered in ascending order, starting with zero (0).", required = true) @PathVariable final long entryNumber,
+			@Parameter(description = "Each entry in a cart has an entry number. Cart entries are numbered in ascending order, starting with zero.", required = true) @PathVariable final long entryNumber,
 			@Parameter(description = "Request body parameter that contains details such as the quantity of product (quantity), and the pickup store name (deliveryPointOfService.name)\n\nThe DTO is in XML or .json format.", required = true) @RequestBody final OrderEntryWsDTO entry,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 			throws CommerceCartModificationException
@@ -247,10 +252,10 @@ public class CartEntriesController extends BaseCommerceController
 
 	@DeleteMapping(value = "/{cartId}/entries/{entryNumber}")
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(operationId = "removeCartEntry", summary = "Deletes cart entry.", description = "Deletes cart entry by entry number.")
+	@Operation(operationId = "removeCartEntry", summary = "Deletes the cart entry.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void removeCartEntry(
-			@Parameter(description = "The entry number. Each entry in a cart has an entry number. Cart entries are numbered in ascending order, starting with zero (0).", required = true) @PathVariable final long entryNumber)
+			@Parameter(description = "Each entry in a cart has an entry number. Cart entries are numbered in ascending order, starting with zero.", required = true) @PathVariable final long entryNumber)
 			throws CommerceCartModificationException
 	{
 		LOG.debug("removeCartEntry: entryNumber = {}", entryNumber);

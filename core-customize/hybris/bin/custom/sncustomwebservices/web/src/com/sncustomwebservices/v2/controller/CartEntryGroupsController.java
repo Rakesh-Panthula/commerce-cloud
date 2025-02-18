@@ -57,7 +57,7 @@ public class CartEntryGroupsController extends BaseCommerceController
 	@PostMapping(value = "/{cartId}/entrygroups/{entryGroupNumber}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
-	@Operation(operationId = "addToCartEntryGroup", summary = "Add a product to a cart entry group.", description = "Adds a product to a cart entry group.")
+	@Operation(operationId = "addToCartEntryGroup", summary = "Assigns a product to a cart entry group.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public CartModificationWsDTO addToCartEntryGroup(@PathVariable final String baseSiteId,
 			@Parameter(description = "Each entry group in a cart has a specific entry group number. Entry group numbers are integers starting at one. They are defined in ascending order.", required = true) @PathVariable final Integer entryGroupNumber,
@@ -86,7 +86,7 @@ public class CartEntryGroupsController extends BaseCommerceController
 
 	@DeleteMapping(value = "/{cartId}/entrygroups/{entryGroupNumber}")
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(operationId = "removeCartEntryGroup", summary = "Delete an entry group.", description = "Removes an entry group from an associated cart. The entry group is identified by an entryGroupNumber. The cart is identified by the cartId.")
+	@Operation(operationId = "removeCartEntryGroup", summary = "Deletes an entry group.", description = "Deletes an entry group from the associated cart.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void removeEntryGroup(
 			@Parameter(description = "Each entry group in a cart has a specific entry group number. Entry group numbers are integers starting at one. They are defined in ascending order.", required = true) @PathVariable final int entryGroupNumber)

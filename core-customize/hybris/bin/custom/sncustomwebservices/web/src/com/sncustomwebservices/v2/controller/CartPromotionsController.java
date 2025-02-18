@@ -56,8 +56,8 @@ public class CartPromotionsController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_CLIENT", "ROLE_GUEST", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT" })
 	@GetMapping(value = "/{cartId}/promotions")
 	@ResponseBody
-	@Operation(operationId = "getCartPromotions", summary = "Get information about promotions applied on cart.", description =
-			"Returns information about the promotions applied on the cart. "
+	@Operation(operationId = "getCartPromotions", summary = "Retrieves the cart promotions.", description =
+			"Retrieves information about the promotions applied to the cart. "
 					+ "Requests pertaining to promotions have been developed for the previous version of promotions and vouchers, and as a result, some of them "
 					+ "are currently not compatible with the new promotions engine.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
@@ -79,13 +79,13 @@ public class CartPromotionsController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_CLIENT", "ROLE_GUEST", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT" })
 	@GetMapping(value = "/{cartId}/promotions/{promotionId}")
 	@ResponseBody
-	@Operation(operationId = "getCartPromotion", summary = "Get information about promotion applied on cart.", description =
-			"Returns information about a promotion (with a specific promotionId), that has "
-					+ "been applied on the cart. Requests pertaining to promotions have been developed for the previous version of promotions and vouchers, and as a result, some "
+	@Operation(operationId = "getCartPromotion", summary = "Retrieves information about the promotion.", description =
+			"Retrieves information about the promotion using the promotion identifier associated with the cart. "
+					+ "Requests pertaining to promotions have been developed for the previous version of promotions and vouchers, and as a result, some "
 					+ "of them are currently not compatible with the new promotions engine.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public PromotionResultListWsDTO getCartPromotion(
-			@Parameter(description = "Promotion identifier (code)", required = true) @PathVariable final String promotionId,
+			@Parameter(description = "Promotion identifier.", required = true,example = "percentage_discount_on_camera") @PathVariable final String promotionId,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		if (LOG.isDebugEnabled())
@@ -118,13 +118,13 @@ public class CartPromotionsController extends BaseCommerceController
 	@Secured({ "ROLE_TRUSTED_CLIENT" })
 	@PostMapping(value = "/{cartId}/promotions")
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(operationId = "doApplyCartPromotion", summary = "Enables promotions based on the promotionsId of the cart.", description =
-			"Enables a promotion for the order based on the promotionId defined for the cart. "
+	@Operation(operationId = "doApplyCartPromotion", summary = "Assigns a promotion to the cart.", description =
+			"Applies a promotion to the cart using the promotion identifier. "
 					+ "Requests pertaining to promotions have been developed for the previous version of promotions and vouchers, and as a result, some of them are currently not compatible "
 					+ "with the new promotions engine.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void doApplyCartPromotion(
-			@Parameter(description = "Promotion identifier (code)", required = true) @RequestParam(required = true) final String promotionId)
+			@Parameter(description = "Promotion identifier.", required = true,example = "percentage_discount_on_camera") @RequestParam(required = true) final String promotionId)
 			throws CommercePromotionRestrictionException
 	{
 		if (LOG.isDebugEnabled())
@@ -137,13 +137,13 @@ public class CartPromotionsController extends BaseCommerceController
 	@Secured({ "ROLE_TRUSTED_CLIENT" })
 	@DeleteMapping(value = "/{cartId}/promotions/{promotionId}")
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(operationId = "removeCartPromotion", summary = "Disables the promotion based on the promotionsId of the cart.", description =
-			"Disables the promotion for the order based on the promotionId defined for the cart. "
+	@Operation(operationId = "removeCartPromotion", summary = "Deletes the promotion.", description =
+			"Deletes the promotion of the order using the promotion identifier defined for the cart. "
 					+ "Requests pertaining to promotions have been developed for the previous version of promotions and vouchers, and as a result, some of them are currently not compatible with "
 					+ "the new promotions engine.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void removeCartPromotion(
-			@Parameter(description = "Promotion identifier (code)", required = true) @PathVariable final String promotionId)
+			@Parameter(description = "Promotion identifier.", required = true, example = "percentage_discount_on_camera") @PathVariable final String promotionId)
 			throws CommercePromotionRestrictionException
 	{
 		if (LOG.isDebugEnabled())
@@ -156,7 +156,7 @@ public class CartPromotionsController extends BaseCommerceController
 	@Secured({ "ROLE_CLIENT", "ROLE_CUSTOMERGROUP", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_GUEST" })
 	@GetMapping(value = "/{cartId}/vouchers")
 	@ResponseBody
-	@Operation(operationId = "getCartVouchers", summary = "Get a list of vouchers applied to the cart.", description = "Returns a list of vouchers applied to the cart.")
+	@Operation(operationId = "getCartVouchers", summary = "Retrieves a list of vouchers.", description = "Retrieves a list of vouchers associated with the cart.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public VoucherListWsDTO getCartVouchers(@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
@@ -169,10 +169,10 @@ public class CartPromotionsController extends BaseCommerceController
 	@Secured({ "ROLE_CLIENT", "ROLE_CUSTOMERGROUP", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_GUEST" })
 	@PostMapping(value = "/{cartId}/vouchers")
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(operationId = "doApplyCartVoucher", summary = "Applies a voucher based on the voucherId defined for the cart.", description = "Applies a voucher based on the voucherId defined for the specified cart.")
+	@Operation(operationId = "doApplyCartVoucher", summary = "Assigns a voucher to the cart.", description = "Assigns a voucher to the cart using the voucher identifier.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void doApplyCartVoucher(
-			@Parameter(description = "Voucher identifier (code)", required = true) @RequestParam final String voucherId,
+			@Parameter(description = "Voucher identifier (code)", required = true, example = "VCHR-H8BC-Y3D5-34AL") @RequestParam final String voucherId,
 			final HttpServletRequest request) throws NoCheckoutCartException, VoucherOperationException
 	{
 		applyVoucherForCartInternal(voucherId, request);
@@ -181,10 +181,10 @@ public class CartPromotionsController extends BaseCommerceController
 	@Secured({ "ROLE_CLIENT", "ROLE_CUSTOMERGROUP", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_GUEST" })
 	@DeleteMapping(value = "/{cartId}/vouchers/{voucherId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	@Operation(operationId = "removeCartVoucher", summary = "Deletes a voucher defined for the current cart.", description = "Deletes a voucher based on the voucherId defined for the current cart.")
+	@Operation(operationId = "removeCartVoucher", summary = "Deletes a voucher defined for the current cart.", description = "Deletes a voucher associated with the current cart.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void removeCartVoucher(
-			@Parameter(description = "Voucher identifier (code)", required = true) @PathVariable final String voucherId)
+			@Parameter(description = "Voucher identifier (code)", required = true,example = "VCHR-H8BC-Y3D5-34AL") @PathVariable final String voucherId)
 			throws NoCheckoutCartException, VoucherOperationException
 	{
 		if (LOG.isDebugEnabled())

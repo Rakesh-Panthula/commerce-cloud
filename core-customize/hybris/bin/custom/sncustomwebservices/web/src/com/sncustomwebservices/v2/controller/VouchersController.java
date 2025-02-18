@@ -35,10 +35,10 @@ public class VouchersController extends BaseController
 	@Secured("ROLE_TRUSTED_CLIENT")
 	@RequestMapping(value = "/{code}", method = RequestMethod.GET)
 	@ResponseBody
-	@Operation(operationId = "getVoucher", summary = "Get a voucher based on code.", description = "Returns details of a single voucher that is specified by its voucher identification code.")
+	@Operation(operationId = "getVoucher", summary = "Retrieves the voucher.", description = "Retrieves the details of the voucher using the voucher identifier.")
 	@ApiBaseSiteIdParam
 	public VoucherWsDTO getVoucher(
-			@Parameter(description = "Voucher identifier (code)", required = true) @PathVariable final String code,
+			@Parameter(description = "Voucher identifier (code)", required = true, example = "VCHR-H8BC-Y3D5-34AL") @PathVariable final String code,
 			@ApiFieldsParam(defaultValue = BASIC_FIELD_SET) @RequestParam(defaultValue = BASIC_FIELD_SET) final String fields)
 			throws VoucherOperationException
 	{

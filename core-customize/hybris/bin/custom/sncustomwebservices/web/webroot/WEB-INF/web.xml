@@ -99,57 +99,6 @@
 		<servlet-name>springmvc</servlet-name>
 	</filter-mapping>
 
-	<!-- <v1-api> -->
-	<!-- Uncomment to make v1 version available -->
-	<!--
-	<filter>
-		<description>
-			Spring configured chain of spring filter beans
-		</description>
-		<filter-name>commerceWebServicesFilterChainV1</filter-name>
-		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-	</filter>
-
-	<filter-mapping>
-		<filter-name>commerceWebServicesFilterChainV1</filter-name>
-		<servlet-name>springmvc-v1</servlet-name>
-	</filter-mapping>
-
-	<filter-mapping>
-		<filter-name>httpPutFormFilter</filter-name>
-		<servlet-name>springmvc-v1</servlet-name>
-	</filter-mapping>
-
-	<servlet>
-		<servlet-name>springmvc-v1</servlet-name>
-		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-		<init-param>
-			<param-name>contextClass</param-name>
-			<param-value>
-				org.springframework.web.context.support.AnnotationConfigWebApplicationContext
-			</param-value>
-		</init-param>
-		<init-param>
-			<param-name>contextConfigLocation</param-name>
-			<param-value>
-				com.sncustomwebservices.v1.config.WebConfig
-			</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>springmvc-v1</servlet-name>
-		<url-pattern>/v1/*</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>springmvc-v1</servlet-name>
-		<url-pattern>/v1/medias/*</url-pattern>
-	</servlet-mapping>
-	-->
-	<!-- END Uncomment to make v1 version available -->
-	<!-- </v1-api> -->
 
 	<servlet>
 		<servlet-name>springmvc</servlet-name>

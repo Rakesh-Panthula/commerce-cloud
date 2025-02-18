@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved.
+ * Copyright (c) 2023 SAP SE or an SAP affiliate company. All rights reserved.
  */
 package com.sncustomwebservices.v2.controller;
 
@@ -46,7 +46,7 @@ public class ForgottenPasswordsController extends BaseController
 	@Secured({ "ROLE_CLIENT", "ROLE_TRUSTED_CLIENT" })
 	@RequestMapping(value = "/forgottenpasswordtokens", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	@Operation(operationId = "doRestorePassword", summary = "Generates a token to restore a customer's forgotten password.", description = "Generates a token in order to restore a customer's forgotten password.")
+	@Operation(operationId = "doRestorePassword", summary = "Creates a token to restore a forgotten password.", description = "Creates a token so that customers can restore their forgotten passwords.")
 	@ApiBaseSiteIdParam
 	public void doRestorePassword(
 			@Parameter(description = "Customer's user id. Customer user id is case insensitive.", required = true) @RequestParam final String userId)
@@ -67,7 +67,7 @@ public class ForgottenPasswordsController extends BaseController
 	@RequestMapping(value = "/resetpassword", method = RequestMethod.POST, consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	@Operation(operationId = "doResetPassword", summary = "Reset password after customer's clicked forgotten password link.", description = "Reset password after customer's clicked forgotten password link. A new password needs to be provided.")
+	@Operation(operationId = "doResetPassword", summary = "Resets a forgotten password.", description = "Reset password after customer's clicked forgotten password link. A new password needs to be provided.")
 	@ApiBaseSiteIdParam
 	public void doResetPassword(
 			@Parameter(description = "Request body parameter that contains details such as token and new password", required = true) @RequestBody final ResetPasswordWsDTO resetPassword)

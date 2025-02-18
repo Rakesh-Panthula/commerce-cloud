@@ -517,9 +517,9 @@
                 <entry key="BASIC"
                        value="purchasable,stock,name,baseProduct,availableForPickup,code,url,price"/>
                 <entry key="DEFAULT"
-                       value="summary,averageRating,purchasable,stock(DEFAULT),description,variantMatrix(DEFAULT),name,baseOptions(DEFAULT),baseProduct,availableForPickup,variantOptions(DEFAULT),code,url,price(DEFAULT),numberOfReviews,manufacturer,categories(BASIC,name),priceRange,multidimensional,configuratorType,configurable,tags"/>
+                       value="summary,averageRating,purchasable,stock(DEFAULT),description,variantMatrix(DEFAULT),name,baseOptions(DEFAULT),baseProduct,availableForPickup,variantOptions(DEFAULT),code,url,price(DEFAULT),numberOfReviews,manufacturer,categories(BASIC,name),priceRange,multidimensional,configuratorType,configurable,tags,sapAddToCartDisabled,sapAddToCartDisabledMessage"/>
                 <entry key="FULL"
-                       value="summary,productReferences(FULL),classifications(FULL),averageRating,purchasable,volumePrices(FULL),variantType,stock(FULL),description,variantMatrix(FULL),name,baseOptions(FULL),baseProduct,availableForPickup,variantOptions(FULL),reviews(FULL),code,url,price(FULL),numberOfReviews,manufacturer,volumePricesFlag,futureStocks(FULL),images(FULL),categories(FULL),potentialPromotions(FULL),priceRange,multidimensional,configuratorType,configurable,tags"/>
+                       value="summary,productReferences(FULL),classifications(FULL),averageRating,purchasable,volumePrices(FULL),variantType,stock(FULL),description,variantMatrix(FULL),name,baseOptions(FULL),baseProduct,availableForPickup,variantOptions(FULL),reviews(FULL),code,url,price(FULL),numberOfReviews,manufacturer,volumePricesFlag,futureStocks(FULL),images(FULL),categories(FULL),potentialPromotions(FULL),priceRange,multidimensional,configuratorType,configurable,tags,sapAddToCartDisabled,sapAddToCartDisabledMessage"/>
             </map>
         </property>
     </bean>
@@ -1627,6 +1627,21 @@
                        value="invoices(DEFAULT),sorts(DEFAULT),pagination(DEFAULT)" />
                 <entry key="FULL"
                        value="invoices(FULL),sorts(FULL),pagination(FULL)" />
+            </map>
+        </property>
+    </bean>
+    
+    <bean parent="fieldSetLevelMapping" id="SAPInvoiceWsDTOFieldSetLevelMapping">
+        <property name="dtoClass"
+                  value="de.hybris.platform.commercewebservicescommons.dto.order.SAPInvoiceWsDTO" />
+        <property name="levelMapping">
+            <map>
+                <entry key="BASIC"
+                       value="invoiceId,createdAt,totalAmount,netAmount,externalSystemId" />
+                <entry key="DEFAULT"
+                       value="invoiceId,createdAt,totalAmount(DEFAULT),netAmount(DEFAULT),externalSystemId" />
+                <entry key="FULL"
+                       value="invoiceId,createdAt,totalAmount(FULL),netAmount(FULL),externalSystemId" />
             </map>
         </property>
     </bean>

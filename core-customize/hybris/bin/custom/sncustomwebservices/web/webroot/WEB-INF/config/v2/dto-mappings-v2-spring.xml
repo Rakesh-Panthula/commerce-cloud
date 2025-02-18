@@ -32,6 +32,8 @@
 	      parent="abstractCustomMapper"/>
 	<bean class="com.sncustomwebservices.mapping.mappers.StockDataMapper"
 	      parent="abstractCustomMapper"/>
+	<bean id="sapInvoiceSortMapper" class="com.sncustomwebservices.mapping.mappers.SapInvoiceSortMapper"
+	      parent="abstractCustomMapper"/>
 
 	<!-- Orika : Converters -->
 	<bean class="com.sncustomwebservices.mapping.converters.StockLevelStatusConverter"/>
@@ -165,6 +167,19 @@
 		</property>
 	</bean>
 
+	<bean id="productMapper" parent="fieldMapper">
+		<property name="sourceClass"
+				  value="de.hybris.platform.commercefacades.product.data.ProductData"/>
+		<property name="destClass"
+				  value="de.hybris.platform.commercewebservicescommons.dto.product.ProductWsDTO"/>
+		<property name="fieldMapping">
+			<map>
+				<entry key="addToCartDisabled" value="sapAddToCartDisabled"/>
+				<entry key="addToCartDisabledMessage" value="sapAddToCartDisabledMessage"/>
+			</map>
+		</property>
+	</bean>
+
 	<!-- Field Mappings : Stores -->
 
 	<bean id="storeFinderSearchPageFieldMapper" parent="fieldMapper">
@@ -289,18 +304,6 @@
 		</property>
 	</bean>
 	
-	<bean id="sapInvoiceListFieldMapper" parent="fieldMapper">
-		<property name="sourceClass"
-	                  value="de.hybris.platform.core.servicelayer.data.SearchPageData" />
-		<property name="destClass"
-	                  value="de.hybris.platform.commercewebservicescommons.dto.order.SAPInvoicesWsDTO" />
-		<property name="fieldMapping">
-			<map>
-				<entry key="results" value="invoices" />
-			</map>
-		</property>
-	</bean>
-	
 	<bean id="sapInvoiceFieldMapper" parent="fieldMapper">
 		<property name="sourceClass"
 	                  value="de.hybris.platform.commercefacades.invoice.data.SAPInvoiceData" />
@@ -309,6 +312,17 @@
 		<property name="fieldMapping">
 			<map>
 				<entry key="invoiceDate" value="createdAt" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- Field Mappings : order -->
+	<bean id="orderFieldMapper" name="orderFieldMapperCommerceWebServices" parent="fieldMapper">
+		<property name="sourceClass" value="de.hybris.platform.commercefacades.order.data.OrderData"/>
+		<property name="destClass" value="de.hybris.platform.commercewebservicescommons.dto.order.OrderWsDTO"/>
+		<property name="fieldMapping">
+			<map>
+				<entry key="rootGroups" value="entryGroups"/>
 			</map>
 		</property>
 	</bean>

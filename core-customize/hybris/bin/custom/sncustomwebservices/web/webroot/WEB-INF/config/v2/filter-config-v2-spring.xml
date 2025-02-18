@@ -24,17 +24,17 @@
 		<ref bean="corsFilter"/>
 		<ref bean="log4jFilter" />
 		<ref bean="restSessionFilterV2" />
-
-		<!-- occ v2 WebAppMediaFilter -->
-		<ref bean="polyglotPersistenceCallbackFilter"/>
-		<ref bean="commerceWebServicesV2WebAppMediaFilter" />
-
+		
 		<!-- commerceWebservices filters -->
 		<ref bean="baseSiteMatchingFilter" />
 
 		<!-- Security -->
 		<ref bean="springSecurityFilterChain" />
 		<ref bean="userMatchingFilter" />
+
+		<!-- occ v2 WebAppMediaFilter -->
+		<ref bean="polyglotPersistenceCallbackFilter"/>
+		<ref bean="commerceWebServicesV2WebAppMediaFilter" />
 
 		<!-- Anonymous Consents -->
 		<ref bean="commerceWebServicesConsentFilterV2"/>

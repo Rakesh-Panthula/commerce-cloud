@@ -17,6 +17,8 @@ import de.hybris.platform.webservicescommons.mapping.FieldSetLevelHelper;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdAndUserIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiFieldsParam;
 import com.sncustomwebservices.v2.helper.OrderReturnsHelper;
+import com.sncustomwebservices.skipfield.SkipReturnRequestFieldValueSetter;
+import com.sncustomwebservices.skipfield.SkipReturnRequestListFieldValueSetter;
 
 import javax.annotation.Resource;
 import javax.ws.rs.core.MediaType;
@@ -55,42 +57,48 @@ public class OrderReturnsController extends BaseCommerceController
 
 	@Resource(name = "returnRequestEntryInputListDTOValidator")
 	private Validator returnRequestEntryInputListDTOValidator;
+	@Resource(name = "skipReturnRequestListFieldValueSetter")
+	private SkipReturnRequestListFieldValueSetter skipReturnRequestListFieldValueSetter;
+	@Resource(name = "skipReturnRequestFieldValueSetter")
+	private SkipReturnRequestFieldValueSetter skipReturnRequestFieldValueSetter;
 
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
-	@CacheControl(directive = CacheControlDirective.PUBLIC, maxAge = 120)
+	@CacheControl(directive = CacheControlDirective.PRIVATE)
 	@GetMapping(produces = MediaType.APPLICATION_JSON)
 	@ResponseBody
-	@Operation(operationId = "getReturnRequests", summary = "Gets the user's return requests history", description = "Returns order return request data associated with a specified user for a specified base store.")
+	@Operation(operationId = "getReturnRequests", summary = "Retrieves the return request history of the customer.", description = "Retrieves the order history for all return requests associated with a customer.")
 	@ApiBaseSiteIdAndUserIdParam
 	public ReturnRequestListWsDTO getReturnRequests(
-			@Parameter(description = "The current result page requested.") @RequestParam(defaultValue = DEFAULT_CURRENT_PAGE) final int currentPage,
-			@Parameter(description = "The number of results returned per page.") @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) final int pageSize,
+			@Parameter(description = "Current result page. Default value is 0.") @RequestParam(defaultValue = DEFAULT_CURRENT_PAGE) final int currentPage,
+			@Parameter(description = "Number of results returned per page.") @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) final int pageSize,
 			@Parameter(description = "Sorting method applied to the return results.") @RequestParam(required = false) final String sort,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
+		skipReturnRequestListFieldValueSetter.setValue(fields);
 		return orderReturnsHelper.searchOrderReturnRequests(currentPage, pageSize, sort, fields);
 	}
 
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@GetMapping(value = "/{returnRequestCode}", produces = MediaType.APPLICATION_JSON)
-	@CacheControl(directive = CacheControlDirective.PUBLIC, maxAge = 120)
+	@CacheControl(directive = CacheControlDirective.PRIVATE)
 	@ResponseBody
-	@Operation(operationId = "getReturnRequest", summary = "Get the details of a return request.", description = "Returns specific order return request details based on a specific return request code. The response contains detailed order return request information.")
+	@Operation(operationId = "getReturnRequest", summary = "Retrieves the details of a return request.", description = "Retrieves the details of a return request. To get entryGroup information, set fields value as follows: fields=order(entryGroups(BASIC)), fields=order(entryGroups(DEFAULT)), or fields=order(entryGroups(FULL)).")
 	@ApiBaseSiteIdAndUserIdParam
 	public ReturnRequestWsDTO getReturnRequest(
-			@Parameter(description = "Order return request code", required = true) @PathVariable final String returnRequestCode,
+			@Parameter(description = "Order returns request code.", required = true) @PathVariable final String returnRequestCode,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
+		skipReturnRequestFieldValueSetter.setValue(fields);
 		return orderReturnsHelper.getOrderReturnRequest(returnRequestCode, fields);
 	}
 
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
-	@Operation(operationId = "updateReturnRequest", summary = "Updates the order return request.", description = "Updates the order return request. Only cancellation of the request is supported by setting the attribute status to CANCELLING. Cancellation of the return request cannot be reverted")
+	@Operation(operationId = "updateReturnRequest", summary = "Updates the order return request using the specified code.", description = "Updates the order return request. Only cancellation of the request is supported by setting the attribute status to CANCELLING. Cancellation of the return request cannot be reverted")
 	@ResponseStatus(HttpStatus.OK)
 	@PatchMapping(value = "/{returnRequestCode}", produces = MediaType.APPLICATION_JSON)
 	@ApiBaseSiteIdAndUserIdParam
 	public void updateReturnRequest(
-			@Parameter(description = "Order return request code", required = true) @PathVariable final String returnRequestCode,
+			@Parameter(description = "Order returns request code.", required = true) @PathVariable final String returnRequestCode,
 			@Parameter(description = "Return request modification object.", required = true) @RequestBody final ReturnRequestModificationWsDTO returnRequestModification)
 	{
 		if (returnRequestModification.getStatus() == ReturnRequestStatusWsDTOType.CANCELLING)
@@ -103,12 +111,16 @@ public class OrderReturnsController extends BaseCommerceController
 	@PostMapping(produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
 	@ResponseStatus(value = HttpStatus.CREATED)
 	@ResponseBody
-	@Operation(operationId = "createReturnRequest", summary = "Create an order return request.", description = "Creates an order return request.")
+	@Operation(operationId = "createReturnRequest", summary = "Creates an order return request.",
+			description = "Creates an order return request. An order can be completely or partially returned."
+					+ " For a complete return, add all order entry numbers and quantities in the request body."
+					+ " For a partial return, only add the order entry numbers and quantities of the selected products.")
 	@ApiBaseSiteIdAndUserIdParam
 	public ReturnRequestWsDTO createReturnRequest(
 			@Parameter(description = "Return request input list for the current order.", required = true) @RequestBody final ReturnRequestEntryInputListWsDTO returnRequestEntryInputList,
 			@ApiFieldsParam @RequestParam(required = false, defaultValue = FieldSetLevelHelper.DEFAULT_LEVEL) final String fields)
 	{
+		skipReturnRequestFieldValueSetter.setValue(fields);
 		validate(returnRequestEntryInputList, "returnRequestEntryInputList", returnRequestEntryInputListDTOValidator);
 		return orderReturnsHelper.createOrderReturnRequest(returnRequestEntryInputList, fields);
 	}

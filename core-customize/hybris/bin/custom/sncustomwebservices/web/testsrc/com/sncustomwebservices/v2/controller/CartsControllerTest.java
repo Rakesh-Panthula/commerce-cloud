@@ -5,14 +5,23 @@ package com.sncustomwebservices.v2.controller;
 
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.commercefacades.order.CartFacade;
+import de.hybris.platform.commercefacades.order.SaveCartFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.CartModificationData;
 import de.hybris.platform.commercefacades.order.data.CartModificationDataList;
+import de.hybris.platform.commercefacades.user.UserFacade;
 import de.hybris.platform.commerceservices.order.CommerceCartModificationException;
+import de.hybris.platform.commerceservices.search.pagedata.SearchPageData;
+import de.hybris.platform.commercewebservicescommons.dto.order.CartListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.CartModificationListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.CartModificationWsDTO;
+import de.hybris.platform.commercewebservicescommons.dto.order.CartWsDTO;
+import de.hybris.platform.commercewebservicescommons.dto.order.EntryGroupWsDTO;
+import de.hybris.platform.commercewebservicescommons.dto.order.OrderEntryWsDTO;
 import de.hybris.platform.webservicescommons.mapping.DataMapper;
 import de.hybris.platform.webservicescommons.mapping.FieldSetLevelHelper;
+import com.sncustomwebservices.skipfield.SkipCartFieldValueSetter;
+import com.sncustomwebservices.skipfield.SkipCartListFieldValueSetter;
 import com.sncustomwebservices.validation.data.CartVoucherValidationData;
 import com.sncustomwebservices.validator.CartVoucherValidator;
 
@@ -32,11 +41,15 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
 
 
 /**
@@ -49,6 +62,7 @@ public class CartsControllerTest
 	private static final String REJECTED_VOUCHER_CODE_1 = "123-abc";
 	private static final String REJECTED_VOUCHER_CODE_2 = "456-def";
 	private static final String FIELDS = "MY_FIELDS";
+	private static final String FIELDS_ENTRIES = "entries(FULL)";
 	private static final String NO_STOCK = "noStock";
 	private static final String COUPON_STATUS_CODE = "couponNotValid";
 	private static final String VOUCHER_STATUS_CODE = "voucherNotValid";
@@ -62,6 +76,14 @@ public class CartsControllerTest
 	private CartFacade cartFacade;
 	@Mock
 	private CartVoucherValidator cartVoucherValidator;
+	@Mock
+	private UserFacade userFacade;
+	@Mock
+	private SaveCartFacade saveCartFacade;
+	@Mock
+	private SkipCartFieldValueSetter skipCartFieldValueSetter;
+	@Mock
+	private SkipCartListFieldValueSetter skipCartListFieldValueSetter;
 	@InjectMocks
 	private CartsController controller;
 
@@ -72,6 +94,32 @@ public class CartsControllerTest
 		cart.setAppliedVouchers(voucherList);
 		given(cartFacade.getSessionCart()).willReturn(cart);
 		lenient().when(dataMapper.map(data, CartModificationWsDTO.class, FIELDS)).thenReturn(wsDTO);
+	}
+
+	@Test
+	public void testGetCart()
+	{
+		final CartWsDTO cartWsDTO = new CartWsDTO();
+		cartWsDTO.setEntryGroups(List.of(new EntryGroupWsDTO()));
+		given(dataMapper.map(any(), eq(CartWsDTO.class), anyString())).willReturn(cartWsDTO);
+		controller.getCart(FIELDS_ENTRIES);
+		verify(skipCartFieldValueSetter).setValue(FIELDS_ENTRIES);
+	}
+
+	@Test
+	public void testGetCarts()
+	{
+		final CartListWsDTO listWsDTO = new CartListWsDTO();
+		final CartWsDTO cartWsDTO = new CartWsDTO();
+		cartWsDTO.setEntries(List.of(new OrderEntryWsDTO()));
+		listWsDTO.setCarts(List.of(cartWsDTO));
+		given(userFacade.isAnonymousUser()).willReturn(false);
+		given(dataMapper.map(any(), eq(CartListWsDTO.class), anyString())).willReturn(listWsDTO);
+		final SearchPageData<CartData> result = new SearchPageData<>();
+		result.setResults(List.of(new CartData()));
+		given(saveCartFacade.getSavedCartsForCurrentUser(any(), any())).willReturn(result);
+		controller.getCarts(FIELDS_ENTRIES, false, 1, 20, "name");
+		verify(skipCartListFieldValueSetter).setValue(FIELDS_ENTRIES);
 	}
 
 	@Test(expected = CommerceCartModificationException.class)

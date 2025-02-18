@@ -25,6 +25,8 @@ import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdUserIdAndCartI
 import de.hybris.platform.webservicescommons.swagger.ApiFieldsParam;
 import com.sncustomwebservices.cart.impl.CommerceWebServicesCartFacade;
 import com.sncustomwebservices.order.data.CartDataList;
+import com.sncustomwebservices.skipfield.SkipCartFieldValueSetter;
+import com.sncustomwebservices.skipfield.SkipCartListFieldValueSetter;
 import com.sncustomwebservices.validation.data.CartVoucherValidationData;
 
 import javax.annotation.Resource;
@@ -74,16 +76,20 @@ public class CartsController extends BaseCommerceController
 	private CustomerFacade customerFacade;
 	@Resource(name = "saveCartFacade")
 	private SaveCartFacade saveCartFacade;
+	@Resource(name = "skipCartFieldValueSetter")
+	private SkipCartFieldValueSetter skipCartFieldValueSetter;
+	@Resource(name = "skipCartListFieldValueSetter")
+	private SkipCartListFieldValueSetter skipCartListFieldValueSetter;
 
 	@GetMapping
 	@ResponseBody
-	@Operation(operationId = "getCarts", summary = "Get all customer carts.", description = "Lists all customer carts.")
+	@Operation(operationId = "getCarts", summary = "Retrieves the carts of a customer.", description = "Retrieves a list of all the carts associated with a customer.")
 	@ApiBaseSiteIdAndUserIdParam
 	public CartListWsDTO getCarts(@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields,
-			@Parameter(description = "Optional parameter. If the parameter is provided and its value is true, only saved carts are returned.") @RequestParam(defaultValue = "false") final boolean savedCartsOnly,
-			@Parameter(description = "Optional pagination parameter in case of savedCartsOnly == true. Default value 0.") @RequestParam(defaultValue = DEFAULT_CURRENT_PAGE) final int currentPage,
-			@Parameter(description = "Optional {@link PaginationData} parameter in case of savedCartsOnly == true. Default value 20.") @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) final int pageSize,
-			@Parameter(description = "Optional sort criterion in case of savedCartsOnly == true. No default value.") @RequestParam(required = false) final String sort)
+			@Parameter(description = "If the value is true, only saved carts are returned.") @RequestParam(defaultValue = "false") final boolean savedCartsOnly,
+			@Parameter(description = "Pagination for savedCartsOnly. Default value is 0.") @RequestParam(defaultValue = DEFAULT_CURRENT_PAGE) final int currentPage,
+			@Parameter(description = "Number of results returned per page if the savedCartsOnly parameter is set to true. Default value: 20.") @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) final int pageSize,
+			@Parameter(description = "Sorting method applied to the return results if the savedCartsOnly parameter is set to true.") @RequestParam(required = false) final String sort)
 	{
 		if (getUserFacade().isAnonymousUser())
 		{
@@ -91,6 +97,8 @@ public class CartsController extends BaseCommerceController
 		}
 
 		final CartDataList cartDataList = new CartDataList();
+
+		skipCartListFieldValueSetter.setValue(fields);
 
 		final PageableData pageableData = new PageableData();
 		pageableData.setCurrentPage(currentPage);
@@ -109,10 +117,12 @@ public class CartsController extends BaseCommerceController
 
 	@GetMapping(value = "/{cartId}")
 	@ResponseBody
-	@Operation(operationId = "getCart", summary = "Get a cart with a given identifier.", description = "Returns the cart with a given identifier.")
+	@Operation(operationId = "getCart", summary = "Retrieves a cart.", description = "Retrieves a cart using the cart identifier. To get entryGroup information, set fields value as follows: fields=entryGroups(BASIC), fields=entryGroups(DEFAULT), or fields=entryGroups(FULL).")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public CartWsDTO getCart(@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
+
+		skipCartFieldValueSetter.setValue(fields);
 		// CartMatchingFilter sets current cart based on cartId, so we can return cart from the session
 		return getDataMapper().map(getSessionCart(), CartWsDTO.class, fields);
 	}
@@ -124,10 +134,11 @@ public class CartsController extends BaseCommerceController
 	@ApiBaseSiteIdAndUserIdParam
 	public CartWsDTO createCart(
 			@Parameter(description = "Anonymous cart GUID.") @RequestParam(required = false) final String oldCartId,
-			@Parameter(description = "The GUID of the user's cart that will be merged with the anonymous cart.") @RequestParam(required = false) final String toMergeCartGuid,
+			@Parameter(description = "The cart GUID that will be merged with the anonymous cart.") @RequestParam(required = false) final String toMergeCartGuid,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		LOG.debug("createCart");
+		skipCartFieldValueSetter.setValue(fields);
 		if (StringUtils.isNotEmpty(oldCartId))
 		{
 			restoreAnonymousCartAndMerge(oldCartId, toMergeCartGuid);
@@ -192,7 +203,7 @@ public class CartsController extends BaseCommerceController
 
 	@DeleteMapping(value = "/{cartId}")
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(operationId = "removeCart", summary = "Deletes a cart with a given cart id.", description = "Deletes a cart with a specified cart id.")
+	@Operation(operationId = "removeCart", summary = "Deletes the cart.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void removeCart()
 	{
@@ -202,7 +213,7 @@ public class CartsController extends BaseCommerceController
 	@Secured({ "ROLE_CLIENT", "ROLE_TRUSTED_CLIENT" })
 	@PutMapping(value = "/{cartId}/email")
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(operationId = "replaceCartGuestUser", summary = "Assigns an email to the cart.", description = "Assigns an email to the cart. This step is required to make a guest checkout.")
+	@Operation(operationId = "replaceCartGuestUser", summary = "Assigns an email address to the cart.", description = "Assigns an email to the cart.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void replaceCartGuestUser(
 			@Parameter(description = "Email of the guest user. It will be used during the checkout process.", required = true) @RequestParam final String email)
@@ -223,7 +234,7 @@ public class CartsController extends BaseCommerceController
 
 	@PostMapping(path = "/{cartId}/validate")
 	@ResponseBody
-	@Operation(operationId = "validateCart", summary = "Validates the cart", description = "Runs a cart validation and returns the result.")
+	@Operation(operationId = "validateCart", summary = "Validates the cart.", description = "Validates the cart and returns the cart data during checkout and quotation.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public CartModificationListWsDTO validateCart(
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)

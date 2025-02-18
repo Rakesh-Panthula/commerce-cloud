@@ -42,7 +42,7 @@ public class CartDeliveryModesController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_GUEST", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT" })
 	@GetMapping(value = "/{cartId}/deliverymode")
 	@ResponseBody
-	@Operation(operationId = "getCartDeliveryMode", summary = "Get the delivery mode selected for the cart.", description = "Returns the delivery mode selected for the cart.")
+	@Operation(operationId = "getCartDeliveryMode", summary = "Retrieves the delivery mode for the cart.", description = "Retrieves information about the delivery mode selected for the cart, including the delivery mode code, name, cost, and so on.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public DeliveryModeWsDTO getCartDeliveryMode(
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
@@ -54,7 +54,7 @@ public class CartDeliveryModesController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_GUEST", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT" })
 	@PutMapping(value = "/{cartId}/deliverymode")
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(operationId = "replaceCartDeliveryMode", summary = "Sets the delivery mode for a cart.", description = "Sets the delivery mode with a given identifier for the cart.")
+	@Operation(operationId = "replaceCartDeliveryMode", summary = "Updates the delivery mode for the cart.", description = "Updates the delivery mode details for the cart based on the specified delivery mode identifier.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void replaceCartDeliveryMode(
 			@Parameter(description = "Delivery mode identifier (code)", required = true) @RequestParam(required = true) final String deliveryModeId)
@@ -66,7 +66,7 @@ public class CartDeliveryModesController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_GUEST", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT" })
 	@DeleteMapping(value = "/{cartId}/deliverymode")
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(operationId = "removeCartDeliveryMode", summary = "Deletes the delivery mode from the cart.", description = "Deletes the delivery mode from the specified cart.")
+	@Operation(operationId = "removeCartDeliveryMode", summary = "Deletes the delivery mode from the cart.", description = "")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void removeCartDeliveryMode()
 	{
@@ -80,9 +80,8 @@ public class CartDeliveryModesController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_GUEST", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT" })
 	@GetMapping(value = "/{cartId}/deliverymodes")
 	@ResponseBody
-	@Operation(operationId = "getCartDeliveryModes", summary = "Get all delivery modes for the current store and delivery address.", description =
-			"Returns all delivery modes supported for the "
-					+ "current base store and cart delivery address. A delivery address must be set for the cart, otherwise an empty list will be returned.")
+	@Operation(operationId = "getCartDeliveryModes", summary = "Retrieves the delivery modes for the current store and delivery address.", description =
+			"Retrieves the delivery modes defined for the current base store and the cart delivery address. If the cart does not have a delivery address, an empty list will be returned.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public DeliveryModeListWsDTO getCartDeliveryModes(
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)

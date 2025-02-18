@@ -49,7 +49,7 @@ public class CartPaymentsController extends BaseCommerceController
 			MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.CREATED)
 	@ResponseBody
-	@Operation(operationId = "createCartPaymentDetails", summary = "Defines and assigns details of a new credit card payment to the cart.", description = "Defines the details of a new credit card, and assigns this payment option to the cart.")
+	@Operation(operationId = "createCartPaymentDetails", summary = "Creates details of a new credit card payment for the cart.", description = "Creates the details of a new credit card payment and assigns it to the cart.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public PaymentDetailsWsDTO createCartPaymentDetails(@Parameter(description =
 			"Request body parameter that contains details such as the name on the card (accountHolderName), the card number (cardNumber), the card type (cardType.code), "

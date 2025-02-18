@@ -13,9 +13,11 @@ import de.hybris.platform.webservicescommons.errors.exceptions.NotFoundException
 import de.hybris.platform.webservicescommons.pagination.WebPaginationUtils;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdAndUserIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiFieldsParam;
+import com.sncustomwebservices.mapping.mappers.SapInvoiceSortMapper;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -46,10 +48,14 @@ public class InvoiceController extends BaseCommerceController
 	@Resource(name = "webPaginationUtils")
 	private WebPaginationUtils webPaginationUtils;
 
+	@Resource(name = "sapInvoiceSortMapper")
+	private SapInvoiceSortMapper sapInvoiceSortMapper;
+
+
 	@Secured(
 	{ "ROLE_CUSTOMERGROUP", "ROLE_CLIENT", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@GetMapping(value = "/{code}/invoices")
-	@CacheControl(directive = CacheControlDirective.PUBLIC, maxAge = 120)
+	@CacheControl(directive = CacheControlDirective.PRIVATE)
 	@ResponseBody
 	@Operation(operationId = "getUserOrderInvoices", summary = "Get invoices for an order.", description = "Returns invoices based on a specific order code. The response contains list of invoice information.")
 	@ApiBaseSiteIdAndUserIdParam
@@ -62,12 +68,16 @@ public class InvoiceController extends BaseCommerceController
 	@RequestParam(defaultValue = DEFAULT_PAGE_SIZE)
 	final int pageSize, @Parameter(description = "Sorting method applied to the return results.")
 	@RequestParam(required = false)
-	final String sort, @ApiFieldsParam
+	String sort, @ApiFieldsParam
 	@RequestParam(defaultValue = DEFAULT_FIELD_SET)
 	final String fields)
 
 
 	{
+		if (StringUtils.isNotBlank(sort))
+		{
+			sort = getSapInvoiceSortMapper().mapSort(sort);
+		}
 		final SearchPageData<SAPInvoiceData> searchPageDataInput = webPaginationUtils.buildSearchPageData(sort, currentPage,
 				pageSize, true);
 		final SearchPageData<SAPInvoiceData> invoices = sapInvoiceFacade.getInvoices(sanitize(code), searchPageDataInput,
@@ -105,5 +115,21 @@ public class InvoiceController extends BaseCommerceController
 
 	}
 
+	/**
+	 * @return the sapInvoiceSortMapper
+	 */
+	public SapInvoiceSortMapper getSapInvoiceSortMapper()
+	{
+		return sapInvoiceSortMapper;
+	}
+
+	/**
+	 * @param sapInvoiceSortMapper
+	 *           the sapInvoiceSortMapper to set
+	 */
+	public void setSapInvoiceSortMapper(final SapInvoiceSortMapper sapInvoiceSortMapper)
+	{
+		this.sapInvoiceSortMapper = sapInvoiceSortMapper;
+	}
 
 }

@@ -48,7 +48,7 @@ public class CartAddressesController extends BaseCommerceController
 			MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.CREATED)
 	@ResponseBody
-	@Operation(operationId = "createCartDeliveryAddress", summary = "Creates a delivery address for the cart.", description = "Creates an address and assigns it to the cart as the delivery address.")
+	@Operation(operationId = "createCartDeliveryAddress", summary = "Creates a delivery address for the cart.", description = "")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public AddressWsDTO createCartDeliveryAddress(@Parameter(description =
 			"Request body parameter that contains details such as the customer's first name (firstName), the customer's last name (lastName), the customer's title (titleCode), the customer's phone (phone), "
@@ -67,7 +67,7 @@ public class CartAddressesController extends BaseCommerceController
 	@PutMapping(value = "/{cartId}/addresses/delivery")
 	@ResponseStatus(HttpStatus.OK)
 	@SiteChannelRestriction(allowedSiteChannelsProperty = API_COMPATIBILITY_B2C_CHANNELS)
-	@Operation(operationId = "replaceCartDeliveryAddress", summary = "Sets a delivery address for the cart.", description = "Sets a delivery address for the cart. The address country must be placed among the delivery countries of the current base store.")
+	@Operation(operationId = "replaceCartDeliveryAddress", summary = "Updates the delivery address for a cart.", description = "The updated address country must be a valid delivery country for the current base store.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void replaceCartDeliveryAddress(
 			@Parameter(description = "Address identifier", required = true) @RequestParam final String addressId)
@@ -78,7 +78,7 @@ public class CartAddressesController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_GUEST", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT" })
 	@DeleteMapping(value = "/{cartId}/addresses/delivery")
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(operationId = "removeCartDeliveryAddress", summary = "Deletes the delivery address from the cart.", description = "Deletes the delivery address from the specified cart.")
+	@Operation(operationId = "removeCartDeliveryAddress", summary = "Deletes the delivery address.", description = "Deletes the delivery address associated with a cart.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void removeCartDeliveryAddress()
 	{

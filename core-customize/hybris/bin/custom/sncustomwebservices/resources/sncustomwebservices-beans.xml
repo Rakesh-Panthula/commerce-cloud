@@ -182,15 +182,5 @@
 		<property name="sorts" type="java.util.List&lt;de.hybris.platform.commerceservices.search.pagedata.SortData>"/>
 		<property name="pagination" type="de.hybris.platform.commerceservices.search.pagedata.PaginationData"/>
 	</bean>
-	
-	 <!-- Custom WsDTO for Brand Conroller API -->
-	<bean class="com.sncustomwebservices.v2.data.BrandWsDTO">
-			<property name="brand" type="java.util.Set&lt;java.lang.String>" />
-	</bean>
-	
-	<!-- Custom DataObj for Brand Conroller API -->
-	<bean class="com.sncustomwebservices.facades.data.BrandData">
-			<property name="brand" type="java.util.Set&lt;java.lang.String>"/>
-	</bean>
 
 </beans>

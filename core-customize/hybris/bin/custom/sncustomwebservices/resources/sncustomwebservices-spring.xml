@@ -299,45 +299,4 @@
 			</list>
 		</property>
 	</bean>
-	
-	<!-- Custom ProductFacade -->
-	<bean id="customProductFacade" class="com.sncustomwebservices.facades.impl.CustomProductFacadeImpl">
-		<property name="productService" ref="customProductService"/>
-		<property name="productConverter" ref="productConverter"/>
-	</bean>
-	
-	<!-- Custom ProductService -->
-	<bean id="customProductService" class="com.sncustomwebservices.service.impl.CustomProductServiceImpl">
-		<property name="customProductDao" ref="customProductDao"/>
-	</bean>
-	
-	<!-- Custom ProductDao -->
-	<bean id="customProductDao" class="com.sncustomwebservices.dao.impl.CustomProductDaoImpl">
-		<property name="flexibleSearchService" ref="flexibleSearchService"/>
-		<property name="modelService" ref="modelService"/>
-		<property name="mediaDao" ref="mediaDao"/>
-		<property name="productImplDao" ref="productDao"/>
-		<property name="catalogService" ref="catalogService"/>
-		<property name="catalogVersionService" ref="catalogVersionService"/>
-		<property name="sessionService" ref="sessionService"/>
-		<property name="searchRestrictionService" ref="searchRestrictionService"/>
-		<property name="service" ref="catalogSynchronizationService"/>
-	</bean>
-	
-	<!-- Custom BrandFacade -->
-	<bean id="customBrandFacade" class="com.sncustomwebservices.facades.impl.CustomBrandFacadeImpl">
-		<property name="brandService" ref="customBrandService"/>
-		<property name="categoryService" ref="categoryService"/>
-	</bean>
-	
-	<!-- Custom BrandService -->
-	<bean id="customBrandService" class="com.sncustomwebservices.service.impl.CustomBrandServiceImpl">
-		<property name="brandDao" ref="customBrandDao"/>
-	</bean>
-	
-	<!-- Custom BrandDao -->
-	<bean id="customBrandDao" class="com.sncustomwebservices.dao.impl.CustomBrandDaoImpl" >
-		<property name="flexibleSearchService" ref="flexibleSearchService"/>
-	</bean>
-	
 </beans>
